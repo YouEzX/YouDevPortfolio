@@ -2,587 +2,1350 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Flappy Bird</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>YouDev — Agencia de Desarrollo Web</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/syne/index.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/outfit/index.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+:root{
+  --bg:#05050f; --bg2:#08081a; --card:rgba(11,11,28,0.85);
+  --g:#00ff88; --p:#ff2055; --c:#00d4ff; --v:#9b59ff; --o:#ff9500;
+  --t:#e4e4f0; --t2:#8888aa; --t3:#44445a;
+  --glow-g:0 0 30px rgba(0,255,136,0.35); --glow-p:0 0 30px rgba(255,32,85,0.35);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:#05050f;color:#e4e4f0;font-family:'Outfit',system-ui,sans-serif;overflow-x:hidden;line-height:1.6}
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:#05050f}
+::-webkit-scrollbar-thumb{background:#00ff88;border-radius:2px}
+::selection{background:rgba(0,255,136,0.25);color:#fff}
 
-  body {
-    background: #1a1a2e;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    overflow: hidden;
-    font-family: 'Press Start 2P', cursive;
-  }
+/* ── NAV ── */
+#nav{
+  position:fixed;top:0;left:0;right:0;z-index:200;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:1.1rem 3rem;background:rgba(5,5,15,0.6);
+  -webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);border-bottom:1px solid rgba(255,255,255,0.04);
+  transition:background .3s,box-shadow .3s;
+}
+#nav.scrolled{background:rgba(5,5,15,0.94);box-shadow:0 4px 30px rgba(0,0,0,0.5)}
+.nav-logo{font-family:'Syne',sans-serif;font-size:1.55rem;font-weight:800;color:#e4e4f0;text-decoration:none;display:flex;align-items:center;gap:.55rem}
+.nav-logo .y{color:#00ff88;text-shadow:0 0 20px rgba(0,255,136,.5)}
+.logo-pulse{width:8px;height:8px;background:#00ff88;border-radius:50%;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(0,255,136,.5);opacity:1}50%{box-shadow:0 0 0 7px rgba(0,255,136,0);opacity:.7}}
+.nav-links{display:flex;align-items:center;gap:1.8rem;list-style:none}
+.nav-links a{color:#8888aa;text-decoration:none;font-size:.83rem;font-weight:500;letter-spacing:.02em;position:relative;transition:color .25s}
+.nav-links a::after{content:'';position:absolute;bottom:-5px;left:0;width:0;height:1px;background:#00ff88;transition:width .3s}
+.nav-links a:hover{color:#e4e4f0}
+.nav-links a:hover::after{width:100%}
+.nav-cta{padding:.55rem 1.4rem;background:transparent;border:1px solid #00ff88;color:#00ff88;border-radius:5px;font-family:'Outfit',sans-serif;font-size:.88rem;font-weight:500;cursor:pointer;transition:all .25s;text-decoration:none}
+.nav-cta:hover{background:#00ff88;color:#05050f;box-shadow:var(--glow-g)}
+.nav-ham{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:4px}
+.nav-ham span{display:block;width:22px;height:1.5px;background:#e4e4f0;transition:all .3s}
 
-  @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+/* ── HERO ── */
+#hero{min-height:100vh;min-height:100svh;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;padding:9rem 2rem 5rem;text-align:center}
+#hero-canvas{position:absolute;top:0;left:0;right:0;bottom:0;width:100%;height:100%;pointer-events:none}
+.hero-glow{position:absolute;top:50%;left:50%;-webkit-transform:translate(-50%,-55%);transform:translate(-50%,-55%);width:700px;height:500px;pointer-events:none;background:radial-gradient(ellipse,rgba(0,255,136,.07) 0%,transparent 70%)}
+.hero-content{position:relative;z-index:2;max-width:960px}
+.hero-badge{display:inline-flex;align-items:center;gap:.55rem;padding:.4rem 1rem;background:rgba(0,255,136,.07);border:1px solid rgba(0,255,136,.2);border-radius:100px;font-size:.75rem;font-weight:600;color:#00ff88;letter-spacing:.1em;text-transform:uppercase;margin-bottom:2rem}
+.hero-badge .bdot{width:6px;height:6px;background:#00ff88;border-radius:50%;animation:pulse 2s infinite}
+.hero-h1{font-family:'Syne',sans-serif;font-size:clamp(4.5rem,10vw,8.5rem);font-weight:800;line-height:.92;letter-spacing:-.03em;margin-bottom:1.8rem}
+.hero-h1 .you{color:#00ff88;text-shadow:0 0 60px rgba(0,255,136,.4),0 0 120px rgba(0,255,136,.15)}
+.hero-sub{font-size:clamp(1rem,2vw,1.2rem);color:#8888aa;max-width:580px;margin:0 auto 2.8rem;line-height:1.75}
+.tw{color:#00d4ff;border-right:2px solid #00d4ff;animation:blink 1s step-end infinite;display:inline}
+@keyframes blink{0%,100%{border-color:#00d4ff}50%{border-color:transparent}}
+.hero-btns{display:flex;justify-content:center;gap:1rem;flex-wrap:wrap}
+.btn-g{padding:.85rem 2rem;background:#00ff88;color:#05050f;border:none;border-radius:5px;font-family:'Outfit',sans-serif;font-size:.95rem;font-weight:600;cursor:pointer;transition:all .25s;text-decoration:none;display:inline-flex;align-items:center;gap:.5rem}
+.btn-g:hover{transform:translateY(-2px);box-shadow:var(--glow-g)}
+.btn-out{padding:.85rem 2rem;background:transparent;color:#e4e4f0;border:1px solid rgba(255,255,255,.12);border-radius:5px;font-family:'Outfit',sans-serif;font-size:.95rem;font-weight:500;cursor:pointer;transition:all .25s;text-decoration:none;display:inline-flex;align-items:center;gap:.5rem}
+.btn-out:hover{border-color:rgba(255,255,255,.3);background:rgba(255,255,255,.04)}
+.scroll-hint{position:absolute;bottom:2.5rem;left:50%;-webkit-transform:translateX(-50%);transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:.4rem;color:#44445a;font-size:.7rem;letter-spacing:.12em;text-transform:uppercase}
+.scroll-line{width:1px;height:44px;background:linear-gradient(to bottom,#00ff88,transparent);animation:sline 2s ease-in-out infinite}
+@keyframes sline{0%{opacity:0;transform:scaleY(0);transform-origin:top}50%{opacity:1;transform:scaleY(1)}100%{opacity:0;transform:scaleY(0);transform-origin:bottom}}
 
-  #game-container {
-    position: relative;
-    width: 360px;
-    height: 640px;
-    overflow: hidden;
-    border: 4px solid #000;
-    box-shadow: 0 0 40px rgba(0,0,0,0.8), inset 0 0 0 2px #555;
-  }
+/* ── SHARED ── */
+.sec{padding:6rem 2rem}
+.sec-dark{background:#08081a}
+.wrap{max-width:1200px;margin:0 auto}
+.sec-lbl{font-size:.72rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:#00ff88;margin-bottom:.9rem;display:flex;align-items:center;gap:.75rem}
+.sec-lbl::before{content:'';width:28px;height:1px;background:#00ff88}
+.sec-title{font-family:'Syne',sans-serif;font-size:clamp(2rem,4vw,3rem);font-weight:800;line-height:1.05;margin-bottom:1rem}
+.sec-desc{color:#8888aa;font-size:1rem;line-height:1.75;max-width:560px}
+.sec-head{margin-bottom:4rem}
+.sec-head.center{text-align:center;display:flex;flex-direction:column;align-items:center}
+.sec-head.center .sec-lbl{justify-content:center}
+.sec-head.center .sec-desc{text-align:center}
+.acc-g{color:#00ff88}.acc-p{color:#ff2055}.acc-c{color:#00d4ff}
+.rv{opacity:0;-webkit-transform:translateY(28px);transform:translateY(28px);transition:opacity .7s ease,-webkit-transform .7s ease,transform .7s ease}
+.rv.in{opacity:1;-webkit-transform:none;transform:none}
+/* Safety: if js loads too slow, don't keep page invisible */
+@media(prefers-reduced-motion:reduce){.rv{opacity:1;transform:none;transition:none}}
 
-  canvas {
-    display: block;
-    image-rendering: pixelated;
-  }
+/* ── SERVICES ── */
+.srv-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:1.4rem}
+.srv-card{padding:2rem;background:rgba(11,11,28,.8);border:1px solid rgba(255,255,255,.055);border-radius:14px;position:relative;overflow:hidden;transition:all .3s}
+.srv-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(to right,#00ff88,#00d4ff);transform:scaleX(0);transform-origin:left;transition:transform .35s}
+.srv-card:hover{border-color:rgba(0,255,136,.2);transform:translateY(-5px);box-shadow:0 24px 48px rgba(0,0,0,.35)}
+.srv-card:hover::before{transform:scaleX(1)}
+.srv-ico{width:50px;height:50px;background:rgba(0,255,136,.09);border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:1.25rem;color:#00ff88;margin-bottom:1.4rem}
+.srv-card h3{font-family:'Syne',sans-serif;font-size:1.05rem;font-weight:700;margin-bottom:.65rem}
+.srv-card p{color:#8888aa;font-size:.87rem;line-height:1.65}
 
-  #overlay {
-    position: absolute;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    background: rgba(0,0,0,0.45);
-    z-index: 10;
-  }
+.pc-overlay{position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(5,5,20,.75);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .3s;-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
+.pc:hover .pc-overlay{opacity:1}
+.pc-visit-btn{padding:.7rem 1.6rem;background:#00ff88;color:#05050f;border-radius:8px;font-family:'Outfit',sans-serif;font-size:.88rem;font-weight:700;text-decoration:none;display:flex;align-items:center;gap:.5rem;transform:translateY(10px);transition:transform .3s;box-shadow:0 8px 24px rgba(0,255,136,.3)}
+.pc:hover .pc-visit-btn{transform:translateY(0)}
+.pc-cat-badge{padding:.22rem .7rem;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);border-radius:100px;font-size:.72rem;color:#44445a;display:flex;align-items:center;gap:.35rem;white-space:nowrap}
+.pc-cat-badge i{font-size:.68rem}
 
-  #overlay.hidden { display: none; }
+/* ── PORTFOLIO ── */
+.proj-filters{display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:2.5rem}
+.pf-btn{padding:.4rem 1rem;background:transparent;border:1px solid rgba(255,255,255,.1);color:#8888aa;border-radius:100px;font-size:.8rem;cursor:pointer;transition:all .2s;font-family:'Outfit',sans-serif}
+.pf-btn:hover,.pf-btn.active{background:#00ff88;border-color:#00ff88;color:#05050f;font-weight:600}
+.proj-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:1.5rem}
+.pc{background:rgba(11,11,28,.85);border:1px solid rgba(255,255,255,.055);border-radius:14px;overflow:hidden;transition:all .3s;position:relative}
+.pc:hover{transform:translateY(-7px);box-shadow:0 28px 55px rgba(0,0,0,.5),0 0 0 1px rgba(0,255,136,.08);border-color:rgba(0,255,136,.2)}
+.pc.adult:hover{border-color:rgba(255,32,85,.25);box-shadow:0 28px 55px rgba(0,0,0,.5)}
+.pc-shot{width:100%;height:210px;position:relative;overflow:hidden;background:#07071a}
+.pc-shot img{width:100%;height:100%;object-fit:cover;object-position:top;transition:transform .5s;opacity:0}
+.pc:hover .pc-shot img{transform:scale(1.06)}
+.skel{position:absolute;top:0;left:0;right:0;bottom:0;background:linear-gradient(90deg,#07071a 0%,rgba(255,255,255,.04) 50%,#07071a 100%);background-size:200% 100%;animation:shimmer 1.6s infinite}
+@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+.skel-inner{position:absolute;top:0;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:.6rem}
+.skel-icon{font-size:2rem;opacity:.2}
+.skel-txt{font-size:.75rem;color:#44445a;letter-spacing:.05em}
+.age-gate{position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(5,5,20,.97);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.9rem;z-index:20;text-align:center;padding:1.5rem;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.ag-badge{padding:.2rem .7rem;background:#ff2055;color:#fff;border-radius:4px;font-size:.72rem;font-weight:700;letter-spacing:.08em}
+.ag-icon{font-size:1.8rem;color:#ff2055}
+.ag-title{font-family:'Syne',sans-serif;font-size:.95rem;font-weight:700}
+.ag-text{font-size:.78rem;color:#8888aa;line-height:1.5;max-width:200px}
+.ag-btn{margin-top:.3rem;padding:.55rem 1.4rem;background:#ff2055;color:#fff;border:none;border-radius:5px;font-family:'Outfit',sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;transition:all .25s}
+.ag-btn:hover{box-shadow:var(--glow-p);transform:translateY(-1px)}
+.pc-body{padding:1.4rem}
+.pc-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:.6rem}
+.pc-name{font-family:'Syne',sans-serif;font-size:1.05rem;font-weight:700}
+.pc-ext{color:#44445a;font-size:.9rem;text-decoration:none;transition:color .2s;display:flex;align-items:center;gap:.3rem}
+.pc-ext:hover{color:#00ff88}
+.pc-desc{color:#8888aa;font-size:.85rem;line-height:1.65;margin-bottom:1rem}
+.tags{display:flex;flex-wrap:wrap;gap:.4rem}
+.tag{padding:.22rem .65rem;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:100px;font-size:.72rem;color:#8888aa}
 
-  .panel {
-    background: #f5c842;
-    border: 4px solid #8b5e00;
-    border-radius: 8px;
-    padding: 24px 32px;
-    text-align: center;
-    box-shadow: 6px 6px 0 #8b5e00;
-    max-width: 300px;
-    width: 90%;
-  }
+/* ── ADULT HINT (barely visible) ── */
+.adult-hint-wrap{display:flex;justify-content:flex-end;margin-top:2.5rem;padding-top:1.2rem;border-top:1px solid rgba(255,255,255,0.03)}
+.adult-hint-btn{background:transparent;border:1px solid rgba(255,255,255,0.05);color:rgba(136,136,170,0.22);font-size:.7rem;padding:.32rem .85rem;border-radius:100px;cursor:pointer;transition:all .4s;display:flex;align-items:center;gap:.4rem;font-family:'Outfit',sans-serif;letter-spacing:.04em}
+.adult-hint-btn:hover{color:rgba(255,32,85,0.5);border-color:rgba(255,32,85,0.18)}
+.adult-hint-btn i{font-size:.65rem}
 
-  .panel h1 {
-    font-size: 26px;
-    color: #fff;
-    text-shadow: 3px 3px 0 #e07b00, -1px -1px 0 #e07b00;
-    margin-bottom: 6px;
-    letter-spacing: 2px;
-  }
+/* ── ADULT SECTION (revealed on confirm) ── */
+#adult-section{padding:4rem 2rem;background:rgba(255,32,85,.02);border-top:1px solid rgba(255,32,85,.08);border-bottom:1px solid rgba(255,32,85,.08)}
+.adult-sec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:2.5rem;flex-wrap:wrap;gap:1rem;max-width:1200px;margin-left:auto;margin-right:auto;margin-bottom:2.5rem}
+.adult-sec-title{display:flex;align-items:center;gap:.75rem}
+.adult-badge-big{padding:.25rem .75rem;background:rgba(255,32,85,.12);border:1px solid rgba(255,32,85,.3);color:#ff2055;border-radius:4px;font-size:.72rem;font-weight:700;letter-spacing:.08em}
+.adult-sec-title h2{font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:800;color:#e4e4f0}
+.adult-hide-btn{background:transparent;border:1px solid rgba(255,255,255,.08);color:#8888aa;font-size:.82rem;padding:.4rem 1.1rem;border-radius:5px;cursor:pointer;transition:all .25s;font-family:'Outfit',sans-serif;display:flex;align-items:center;gap:.45rem}
+.adult-hide-btn:hover{border-color:rgba(255,255,255,.2);color:#e4e4f0}
+.adult-grid{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:1.5rem}
 
-  .panel .subtitle {
-    font-size: 8px;
-    color: #8b5e00;
-    margin-bottom: 20px;
-    letter-spacing: 1px;
-  }
+/* ── STATS ── */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1.5rem}
+.stat{padding:2.5rem 1.5rem;text-align:center;background:rgba(11,11,28,.8);border:1px solid rgba(255,255,255,.055);border-radius:14px;position:relative;overflow:hidden;transition:all .3s}
+.stat::after{content:'';position:absolute;bottom:0;left:20%;right:20%;height:1px;background:linear-gradient(to right,transparent,#00ff88,transparent)}
+.stat:hover{transform:translateY(-4px);border-color:rgba(0,255,136,.15)}
+.stat-n{font-family:'Syne',sans-serif;font-size:3.8rem;font-weight:800;line-height:1;color:#00ff88;text-shadow:0 0 25px rgba(0,255,136,.4);margin-bottom:.5rem}
+.stat-l{color:#8888aa;font-size:.82rem;text-transform:uppercase;letter-spacing:.08em}
 
-  .bird-preview {
-    width: 48px;
-    height: 48px;
-    margin: 0 auto 16px;
-    animation: bob 0.6s ease-in-out infinite alternate;
-  }
+/* ── TEAM STORY ── */
+.team-story{position:relative;max-width:960px;margin:0 auto}
+.team-story-lead{font-family:'Syne',sans-serif;font-size:clamp(1.7rem,3.5vw,2.6rem);font-weight:800;line-height:1.15;margin-bottom:2rem}
+.team-story-lead .acc-g{color:#00ff88;text-shadow:0 0 30px rgba(0,255,136,.3)}
+.team-story-body{display:flex;flex-direction:column;gap:1.6rem}
+.team-story-p{color:#8888aa;font-size:1rem;line-height:1.85}
+.team-story-p strong{color:#e4e4f0;font-weight:600}
+.team-duo{display:flex;gap:1.5rem;margin:2rem 0;flex-wrap:wrap}
+.team-pill{flex:1;min-width:240px;padding:1.6rem;background:rgba(11,11,28,.85);border:1px solid rgba(255,255,255,.06);border-radius:16px;display:flex;align-items:center;gap:1.2rem;transition:all .3s}
+.team-pill:hover{transform:translateY(-4px);border-color:rgba(0,255,136,.2);box-shadow:0 20px 40px rgba(0,0,0,.3)}
+.team-pill:nth-child(2):hover{border-color:rgba(0,212,255,.2)}
+.team-pill-av{width:62px;height:62px;min-width:62px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:800;color:#05050f;flex-shrink:0}
+.team-pill-av.g{background:linear-gradient(135deg,#00ff88,#00d4ff);box-shadow:0 0 24px rgba(0,255,136,.25)}
+.team-pill-av.c{background:linear-gradient(135deg,#00d4ff,#9b59ff);box-shadow:0 0 24px rgba(0,212,255,.25)}
+.team-pill-info{}
+.team-pill-name{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:800;margin-bottom:.2rem}
+.team-pill-role{color:#8888aa;font-size:.82rem}
+.team-pill-role span{color:#00ff88}
+.team-pill:nth-child(2) .team-pill-role span{color:#00d4ff}
+.team-values{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.2rem;margin-top:2.5rem}
+.team-val{padding:1.4rem;background:rgba(0,255,136,.04);border:1px solid rgba(0,255,136,.1);border-radius:12px;text-align:center}
+.team-val-ico{font-size:1.5rem;color:#00ff88;margin-bottom:.7rem}
+.team-val h4{font-family:'Syne',sans-serif;font-size:.95rem;font-weight:700;margin-bottom:.4rem}
+.team-val p{color:#8888aa;font-size:.82rem;line-height:1.6}
 
-  @keyframes bob {
-    from { transform: translateY(-4px) rotate(-10deg); }
-    to   { transform: translateY(4px) rotate(10deg); }
-  }
+/* ── HISTORIA ── */
+.historia-inner{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:start}
+.historia-left{position:-webkit-sticky;position:sticky;top:120px}
+.historia-big{font-family:'Syne',sans-serif;font-size:clamp(2.5rem,4.5vw,3.8rem);font-weight:800;line-height:1.05;margin-bottom:1.5rem}
+.historia-intro{color:#8888aa;font-size:.95rem;line-height:1.75;margin-bottom:2rem}
+.historia-quote{padding:1.5rem 1.8rem;background:rgba(0,255,136,.05);border-left:3px solid #00ff88;border-radius:0 10px 10px 0;color:#8888aa;font-size:.93rem;line-height:1.75;font-style:italic}
+.historia-quote strong{color:#e4e4f0;font-style:normal}
+.ht-list{display:flex;flex-direction:column}
+.ht-item{display:flex;gap:1.4rem;padding-bottom:2.5rem;position:relative}
+.ht-item:not(:last-child)::before{content:'';position:absolute;left:19px;top:40px;bottom:0;width:1px;background:rgba(255,255,255,.06)}
+.ht-dot{width:40px;height:40px;min-width:40px;border-radius:50%;background:rgba(0,255,136,.08);border:1px solid rgba(0,255,136,.22);display:flex;align-items:center;justify-content:center;color:#00ff88;font-size:.9rem;position:relative;z-index:1;transition:all .3s}
+.ht-item:hover .ht-dot{background:rgba(0,255,136,.18);box-shadow:0 0 20px rgba(0,255,136,.22)}
+.ht-body{padding-top:.35rem}
+.ht-year{font-size:.69rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#00ff88;margin-bottom:.25rem}
+.ht-ttl{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;margin-bottom:.4rem}
+.ht-txt{color:#8888aa;font-size:.87rem;line-height:1.65}
 
-  .btn {
-    display: inline-block;
-    background: #4caf50;
-    color: #fff;
-    font-family: 'Press Start 2P', cursive;
-    font-size: 10px;
-    padding: 10px 20px;
-    border: 3px solid #2e7d32;
-    border-radius: 4px;
-    cursor: pointer;
-    box-shadow: 0 4px 0 #2e7d32;
-    transition: transform 0.1s, box-shadow 0.1s;
-    user-select: none;
-    margin-top: 8px;
-  }
+/* ── WHY WEB SECTION ── */
+.whyweb-hero{text-align:center;margin-bottom:4rem}
+.whyweb-big{font-family:'Syne',sans-serif;font-size:clamp(2rem,4vw,3.2rem);font-weight:800;line-height:1.1;margin-bottom:1.2rem}
+.whyweb-sub{color:#8888aa;font-size:1.05rem;line-height:1.8;max-width:700px;margin:0 auto 2.5rem}
+.whyweb-comparison{display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-bottom:4rem}
+.ww-col{padding:2.5rem;border-radius:18px}
+.ww-col.bad{background:rgba(255,32,85,.05);border:1px solid rgba(255,32,85,.15)}
+.ww-col.good{background:rgba(0,255,136,.05);border:1px solid rgba(0,255,136,.15)}
+.ww-col-head{display:flex;align-items:center;gap:.75rem;margin-bottom:1.8rem}
+.ww-col-head i{font-size:1.5rem}
+.ww-col.bad .ww-col-head i{color:#ff2055}
+.ww-col.good .ww-col-head i{color:#00ff88}
+.ww-col-head h3{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:800}
+.ww-list{list-style:none;display:flex;flex-direction:column;gap:1rem}
+.ww-list li{display:flex;align-items:flex-start;gap:.75rem;color:#8888aa;font-size:.9rem;line-height:1.6}
+.ww-list li i{margin-top:.2rem;flex-shrink:0}
+.ww-col.bad .ww-list li i{color:#ff2055}
+.ww-col.good .ww-list li i{color:#00ff88}
+.whyweb-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.5rem;margin-bottom:4rem}
+.ww-stat{padding:2rem 1.5rem;text-align:center;background:rgba(11,11,28,.85);border:1px solid rgba(255,255,255,.06);border-radius:14px}
+.ww-stat-n{font-family:'Syne',sans-serif;font-size:2.8rem;font-weight:800;color:#00ff88;line-height:1;margin-bottom:.5rem}
+.ww-stat-l{color:#8888aa;font-size:.82rem;line-height:1.5}
+.whyweb-story{max-width:760px;margin:0 auto;padding:3rem;background:rgba(0,255,136,.04);border:1px solid rgba(0,255,136,.12);border-radius:20px}
+.whyweb-story p{color:#8888aa;font-size:.97rem;line-height:1.9;margin-bottom:1.2rem}
+.whyweb-story p:last-child{margin-bottom:0}
+.whyweb-story strong{color:#e4e4f0}
+.whyweb-story .highlight{display:block;font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:800;color:#00ff88;margin:1.5rem 0 1rem;line-height:1.2}
 
-  .btn:hover { background: #66bb6a; }
-  .btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #2e7d32; }
+/* ── TESTIMONIOS ── */
+.test-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.5rem}
+.test-card{padding:2.2rem;background:rgba(11,11,28,.85);border:1px solid rgba(255,255,255,.055);border-radius:16px;transition:all .3s;position:relative}
+.test-card::before{content:'\201C';position:absolute;top:1rem;right:1.5rem;font-size:4rem;color:rgba(0,255,136,.1);font-family:'Syne',sans-serif;line-height:1}
+.test-card:hover{transform:translateY(-5px);border-color:rgba(0,255,136,.15);box-shadow:0 24px 48px rgba(0,0,0,.3)}
+.test-stars{display:flex;gap:.25rem;color:#ff9500;font-size:.85rem;margin-bottom:1rem}
+.test-text{color:#8888aa;font-size:.92rem;line-height:1.8;margin-bottom:1.5rem;font-style:italic}
+.test-author{display:flex;align-items:center;gap:.85rem}
+.test-av{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:1rem;font-weight:800;color:#05050f;flex-shrink:0}
+.test-author-info{}
+.test-author-name{font-weight:700;font-size:.9rem;margin-bottom:.1rem}
+.test-author-biz{color:#8888aa;font-size:.78rem}
 
-  #score-display {
-    position: absolute;
-    top: 20px;
-    width: 100%;
-    text-align: center;
-    font-size: 32px;
-    color: #fff;
-    text-shadow: 3px 3px 0 #333;
-    z-index: 5;
-    pointer-events: none;
-  }
+/* ── FAQ ── */
+.faq-list{max-width:800px;margin:0 auto;display:flex;flex-direction:column;gap:1rem}
+.faq-item{background:rgba(11,11,28,.85);border:1px solid rgba(255,255,255,.055);border-radius:14px;overflow:hidden;transition:border-color .3s}
+.faq-item.open{border-color:rgba(0,255,136,.2)}
+.faq-q{display:flex;align-items:center;justify-content:space-between;padding:1.4rem 1.8rem;cursor:pointer;gap:1rem}
+.faq-q h3{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;line-height:1.4}
+.faq-q i{color:#00ff88;font-size:.9rem;flex-shrink:0;transition:transform .35s}
+.faq-item.open .faq-q i{transform:rotate(45deg)}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .4s ease,padding .3s}
+.faq-item.open .faq-a{max-height:200px}
+.faq-a-inner{padding:0 1.8rem 1.4rem;color:#8888aa;font-size:.9rem;line-height:1.75}
 
-  .score-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin: 6px 0;
-    font-size: 9px;
-    color: #5a3800;
-  }
+/* ── PROJECTS INTERACTIVE ── */
+.proj-grid-enhanced{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:1.8rem}
 
-  .score-val {
-    color: #fff;
-    text-shadow: 1px 1px 0 #8b5e00;
-    font-size: 11px;
-  }
+/* ── PROCESS ── */
+.proc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:2rem;position:relative}
+.proc-grid::before{content:'';position:absolute;top:60px;left:calc(10%);right:calc(10%);height:1px;background:linear-gradient(to right,transparent,rgba(0,255,136,.15),transparent);pointer-events:none}
+.proc-step{text-align:center;padding:2rem 1.2rem}
+.proc-n{font-family:'Syne',sans-serif;font-size:4.5rem;font-weight:800;color:rgba(0,255,136,.06);line-height:1;margin-bottom:.8rem;transition:color .3s}
+.proc-step:hover .proc-n{color:rgba(0,255,136,.14)}
+.proc-ico{width:58px;height:58px;background:rgba(0,255,136,.08);border:1px solid rgba(0,255,136,.18);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1.2rem;font-size:1.3rem;color:#00ff88;transition:all .3s}
+.proc-step:hover .proc-ico{background:rgba(0,255,136,.15);box-shadow:0 0 25px rgba(0,255,136,.2)}
+.proc-step h3{font-family:'Syne',sans-serif;font-size:1.05rem;font-weight:700;margin-bottom:.65rem}
+.proc-step p{color:#8888aa;font-size:.88rem;line-height:1.65}
 
-  .medal {
-    font-size: 28px;
-    margin: 8px 0;
-  }
+/* ── TECH ── */
+.tech-wrap{display:flex;flex-wrap:wrap;gap:.85rem;justify-content:center;max-width:900px;margin:0 auto}
+.tech-pill{padding:.55rem 1.2rem;background:rgba(11,11,28,.8);border:1px solid rgba(255,255,255,.07);border-radius:100px;font-size:.88rem;color:#8888aa;display:flex;align-items:center;gap:.5rem;transition:all .3s}
+.tech-pill i{color:#00ff88;font-size:.95rem}
+.tech-pill:hover{border-color:rgba(0,255,136,.25);color:#e4e4f0;transform:translateY(-2px)}
 
-  #hint {
-    font-size: 7px;
-    color: #8b5e00;
-    margin-top: 10px;
-    line-height: 1.8;
-    text-align: center;
-  }
+/* ── CONTACT ── */
+.contact-box{text-align:center;max-width:620px;margin:0 auto;padding:4.5rem 3.5rem;background:rgba(11,11,28,.85);border:1px solid rgba(255,255,255,.07);border-radius:20px;position:relative;overflow:hidden}
+.contact-box::before{content:'';position:absolute;top:0;left:0;right:0;bottom:0;pointer-events:none;background:radial-gradient(ellipse at center top,rgba(0,255,136,.07) 0%,transparent 65%)}
+.contact-box::after{content:'';position:absolute;bottom:-1px;left:15%;right:15%;height:1px;background:linear-gradient(to right,transparent,#00ff88,transparent)}
+.contact-box h2{font-family:'Syne',sans-serif;font-size:2.4rem;font-weight:800;margin-bottom:.9rem;position:relative}
+.contact-box p{color:#8888aa;font-size:1rem;margin-bottom:2.2rem;position:relative}
+.contact-btns{display:flex;justify-content:center;gap:1rem;flex-wrap:wrap;position:relative}
+.contact-meta{display:flex;justify-content:center;gap:2.5rem;margin-top:2rem;flex-wrap:wrap;position:relative}
+.cmeta-item{display:flex;align-items:center;gap:.5rem;color:#44445a;font-size:.82rem}
+.cmeta-item i{color:#00ff88;font-size:.82rem}
+.cmeta-item a{color:#44445a;text-decoration:none;transition:color .25s}
+.cmeta-item a:hover{color:#00ff88}
+
+/* ── FOOTER ── */
+footer{padding:2.8rem 3rem;background:#08081a;border-top:1px solid rgba(255,255,255,.05)}
+.foot-in{max-width:1200px;margin:0 auto;display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:2rem}
+.foot-brand{}
+.foot-logo{font-family:'Syne',sans-serif;font-size:1.25rem;font-weight:800;margin-bottom:.4rem}
+.foot-logo span{color:#00ff88}
+.foot-copy{color:#44445a;font-size:.78rem;margin-bottom:.2rem}
+.foot-tagline{color:#44445a;font-size:.73rem}
+.foot-links{display:flex;gap:1.8rem;list-style:none;align-items:center;flex-wrap:wrap}
+.foot-links a{color:#44445a;text-decoration:none;font-size:.8rem;transition:color .25s}
+.foot-links a:hover{color:#00ff88}
+.foot-right{display:flex;flex-direction:column;align-items:flex-end;gap:.6rem}
+.foot-devs{color:#44445a;font-size:.75rem}
+.foot-18{background:transparent;border:none;color:rgba(136,136,170,0.18);font-size:.67rem;cursor:pointer;transition:all .35s;padding:.2rem .5rem;border-radius:4px;font-family:'Outfit',sans-serif;display:flex;align-items:center;gap:.3rem;letter-spacing:.03em}
+.foot-18:hover{color:rgba(255,32,85,0.38)}
+
+/* ── ADULT MODAL ── */
+#adult-modal{position:fixed;top:0;left:0;right:0;bottom:0;z-index:999;display:none;align-items:center;justify-content:center}
+#adult-modal.show{display:flex}
+.modal-overlay{position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(5,5,20,.93);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+.modal-box{position:relative;z-index:1;background:#08081a;border:1px solid rgba(255,32,85,.18);border-radius:22px;padding:3rem 2.5rem;max-width:420px;width:90%;text-align:center;box-shadow:0 0 60px rgba(255,32,85,.07),0 40px 80px rgba(0,0,0,.6)}
+.modal-icon{font-size:3rem;margin-bottom:.8rem}
+.modal-warn-badge{display:inline-flex;align-items:center;gap:.4rem;padding:.28rem .85rem;background:rgba(255,32,85,.1);border:1px solid rgba(255,32,85,.25);border-radius:4px;color:#ff2055;font-size:.72rem;font-weight:700;letter-spacing:.06em;margin-bottom:1.2rem}
+.modal-box h3{font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:800;margin-bottom:.8rem;color:#e4e4f0}
+.modal-box p{color:#8888aa;font-size:.87rem;line-height:1.72;margin-bottom:2rem}
+.modal-btns{display:flex;flex-direction:column;gap:.75rem}
+.modal-confirm{padding:.9rem 1.5rem;background:#ff2055;color:#fff;border:none;border-radius:8px;font-family:'Outfit',sans-serif;font-size:.9rem;font-weight:600;cursor:pointer;transition:all .25s;display:flex;align-items:center;justify-content:center;gap:.5rem}
+.modal-confirm:hover{box-shadow:var(--glow-p);transform:translateY(-1px)}
+.modal-cancel{padding:.75rem 1.5rem;background:transparent;color:#8888aa;border:1px solid rgba(255,255,255,.08);border-radius:8px;font-family:'Outfit',sans-serif;font-size:.88rem;cursor:pointer;transition:all .25s}
+.modal-cancel:hover{border-color:rgba(255,255,255,.2);color:#e4e4f0}
+.modal-disclaimer{margin-top:1.2rem;font-size:.68rem;color:#44445a;line-height:1.6}
+
+/* ── FLOATING WHY-WEB BUTTON ── */
+#float-whyweb{
+  position:fixed;bottom:2rem;right:2rem;z-index:150;
+  display:flex;align-items:center;gap:.6rem;
+  padding:.7rem 1.3rem;
+  background:linear-gradient(135deg,rgba(0,255,136,.15),rgba(0,212,255,.1));
+  border:1px solid rgba(0,255,136,.35);
+  border-radius:100px;
+  color:#00ff88;font-family:'Outfit',sans-serif;font-size:.82rem;font-weight:700;
+  text-decoration:none;letter-spacing:.02em;
+  -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
+  box-shadow:0 8px 32px rgba(0,255,136,.15),0 0 0 1px rgba(0,255,136,.08);
+  transition:all .3s;
+  animation:floatBtn 3s ease-in-out infinite;
+}
+#float-whyweb:hover{
+  background:linear-gradient(135deg,rgba(0,255,136,.28),rgba(0,212,255,.18));
+  box-shadow:0 12px 40px rgba(0,255,136,.28),0 0 0 1px rgba(0,255,136,.2);
+  transform:translateY(-3px) scale(1.03);
+}
+#float-whyweb i{font-size:.85rem}
+#float-whyweb .fw-pulse{width:7px;height:7px;background:#00ff88;border-radius:50%;animation:pulse 2s infinite;flex-shrink:0}
+@keyframes floatBtn{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+#float-whyweb:hover{animation:none}
+
+/* ── NOISE ── */
+body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;pointer-events:none;z-index:999;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='f'%3E%3CfeTurbulence baseFrequency='.7' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23f)'/%3E%3C/svg%3E");opacity:.018}
+
+/* ── RESPONSIVE ── */
+@media(max-width:960px){
+  .historia-inner{grid-template-columns:1fr;gap:3rem}
+  .historia-left{position:static}
+  .whyweb-comparison{grid-template-columns:1fr}
+}
+@media(max-width:860px){
+  #nav{padding:1rem 1.5rem}
+  .nav-links{display:none}
+  .nav-links.open{display:flex;flex-direction:column;gap:1.4rem;position:absolute;top:100%;left:0;right:0;background:rgba(5,5,20,.97);padding:2rem;border-bottom:1px solid rgba(255,255,255,.05)}
+  .nav-ham{display:flex}
+  .proj-grid,.adult-grid{grid-template-columns:1fr}
+  .stats-grid{grid-template-columns:repeat(2,1fr)}
+  .contact-box{padding:2.5rem 1.5rem}
+  .proc-grid::before{display:none}
+  footer{padding:2rem 1.5rem}
+  .foot-in{flex-direction:column}
+  .foot-right{align-items:flex-start}
+}
+@media(max-width:600px){
+  .team-duo{flex-direction:column}
+}
+@media(max-width:480px){
+  .hero-h1{font-size:3.8rem}
+  .stats-grid{grid-template-columns:1fr}
+}
 </style>
 </head>
 <body>
 
-<div id="game-container">
-  <canvas id="canvas" width="360" height="640"></canvas>
+<!-- NAV -->
+<nav id="nav">  <a href="#hero" class="nav-logo">
+    <div class="logo-pulse"></div>
+    <span class="y">You</span>Dev
+  </a>
+  <ul class="nav-links" id="nav-links">
+    <li><a href="#servicios">Servicios</a></li>
+    <li><a href="#portafolio">Portafolio</a></li>
+    <li><a href="#equipo">Equipo</a></li>
+    <li><a href="#historia">Historia</a></li>
+    <li><a href="#por-que-web">¿Por qué?</a></li>
+    <li><a href="#testimonios">Clientes</a></li>
+    <li><a href="#proceso">Proceso</a></li>
+  </ul>
+  <a href="#contacto" class="nav-cta">Contrátanos</a>
+  <div class="nav-ham" id="ham" onclick="toggleMenu()">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
 
-  <div id="score-display" class="hidden">0</div>
-
-  <!-- Start Screen -->
-  <div id="overlay" id="start-overlay">
-    <div class="panel">
-      <h1>FLAPPY<br>BIRD</h1>
-      <p class="subtitle">PIXEL EDITION</p>
-      <canvas id="bird-preview" class="bird-preview" width="48" height="48"></canvas>
-      <div id="hint">ESPACIO / CLICK / TAP<br>para volar</div>
-      <br>
-      <button class="btn" id="start-btn">▶ JUGAR</button>
+<!-- HERO -->
+<section id="hero">
+  <canvas id="hero-canvas"></canvas>
+  <div class="hero-glow"></div>
+  <div class="hero-content">
+    <div class="hero-badge">
+      <div class="bdot"></div>
+      Agencia de Desarrollo Web · República Dominicana
     </div>
+    <h1 class="hero-h1"><span class="you">You</span>Dev</h1>
+    <p class="hero-sub">
+      Construimos presencias digitales para
+      <span id="tw" class="tw">restaurantes</span><br>
+      y todo tipo de negocios locales.
+    </p>
+    <div class="hero-btns">
+      <a href="#portafolio" class="btn-g"><i class="fa-solid fa-eye"></i> Ver Proyectos</a>
+      <a href="#por-que-web" class="btn-out"><i class="fa-solid fa-globe"></i> ¿Por qué necesitas una web?</a>
+    </div>
+  </div>
+  <div class="scroll-hint"><span>Scroll</span><div class="scroll-line"></div></div>
+</section>
+
+<!-- FLOATING WHY-WEB BUTTON -->
+<a href="#por-que-web" id="float-whyweb">
+  <div class="fw-pulse"></div>
+  <i class="fa-solid fa-globe"></i>
+  ¿Por qué una web?
+</a>
+
+<!-- SERVICES -->
+<section id="servicios" class="sec sec-dark">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <div class="sec-lbl">Lo que hacemos</div>
+      <h2 class="sec-title">Webs para tu negocio,<br><span class="acc-g">sin complicaciones</span></h2>
+      <p class="sec-desc">Nos especializamos en crear sitios web modernos y funcionales para todo tipo de empresas en República Dominicana y más allá.</p>
+    </div>
+    <div class="srv-grid">
+      <div class="srv-card rv" style="transition-delay:.06s">
+        <div class="srv-ico"><i class="fa-solid fa-utensils"></i></div>
+        <h3>Restaurantes &amp; Cafés</h3>
+        <p>Menús digitales, reservas online, galería de platos y todo lo que tu restaurante necesita en internet.</p>
+      </div>
+      <div class="srv-card rv" style="transition-delay:.11s">
+        <div class="srv-ico"><i class="fa-solid fa-cake-candles"></i></div>
+        <h3>Pastelerías &amp; Repostería</h3>
+        <p>Catálogos dulces, pedidos personalizados y una presencia digital que le haga la boca agua a tus clientes.</p>
+      </div>
+      <div class="srv-card rv" style="transition-delay:.16s">
+        <div class="srv-ico"><i class="fa-solid fa-wrench"></i></div>
+        <h3>Ferreterías &amp; Tiendas</h3>
+        <p>Catálogos de productos, contacto rápido, ubicación y horarios para que tus clientes te encuentren.</p>
+      </div>
+      <div class="srv-card rv" style="transition-delay:.21s">
+        <div class="srv-ico"><i class="fa-solid fa-graduation-cap"></i></div>
+        <h3>Colegios &amp; Academias</h3>
+        <p>Portales educativos, noticias, inscripciones y comunicación directa con padres y estudiantes.</p>
+      </div>
+      <div class="srv-card rv" style="transition-delay:.26s">
+        <div class="srv-ico"><i class="fa-solid fa-cart-shopping"></i></div>
+        <h3>E-commerce</h3>
+        <p>Tiendas online con carrito de compras, pasarela de pagos y gestión de inventario integrada.</p>
+      </div>
+      <div class="srv-card rv" style="transition-delay:.31s">
+        <div class="srv-ico"><i class="fa-solid fa-shield-halved"></i></div>
+        <h3>Ciberseguridad Web</h3>
+        <p>Webs seguras desde el código base. Buenas prácticas, protección de datos y auditorías de seguridad.</p>
+      </div>
+      <div class="srv-card rv" style="transition-delay:.36s">
+        <div class="srv-ico"><i class="fa-solid fa-mobile-screen"></i></div>
+        <h3>Apps Web &amp; Herramientas</h3>
+        <p>Sistemas de gestión, plataformas educativas y herramientas a medida para tu negocio o proyecto.</p>
+      </div>
+      <div class="srv-card rv" style="transition-delay:.41s">
+        <div class="srv-ico"><i class="fa-solid fa-store"></i></div>
+        <h3>Negocios Locales</h3>
+        <p>Cualquier negocio merece presencia digital. Webs personalizadas para todo tipo de empresa, grande o pequeña.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PORTFOLIO -->
+<section id="portafolio" class="sec">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <div class="sec-lbl">Nuestro trabajo</div>
+      <h2 class="sec-title">Proyectos <span class="acc-g">realizados</span></h2>
+      <p class="sec-desc">Desde pastelerías hasta herramientas de ciberseguridad — cada proyecto construido a mano, con código limpio y diseño a medida.</p>
+    </div>
+    <div class="proj-filters rv" id="proj-filters">
+      <button class="pf-btn active" data-filter="all">Todos</button>
+      <button class="pf-btn" data-filter="negocios">Negocios</button>
+      <button class="pf-btn" data-filter="gaming">Gaming</button>
+      <button class="pf-btn" data-filter="educacion">Educación</button>
+      <button class="pf-btn" data-filter="seguridad">Seguridad</button>
+      <button class="pf-btn" data-filter="herramientas">Herramientas</button>
+    </div>
+    <div class="proj-grid" id="proj-grid"></div>
+    <!-- Adult hint — barely visible -->
+    <div class="adult-hint-wrap">
+      <button class="adult-hint-btn" onclick="openAdultModal()">
+        <i class="fa-solid fa-lock"></i> zona restringida
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- ADULT SECTION (hidden by default, revealed after age confirm) -->
+<section id="adult-section" style="display:none">
+  <div class="adult-sec-head">
+    <div class="adult-sec-title">
+      <span class="adult-badge-big">+18</span>
+      <h2>Proyectos de contenido adulto</h2>
+    </div>
+    <button class="adult-hide-btn" onclick="hideAdultSection()">
+      <i class="fa-solid fa-eye-slash"></i> Ocultar sección
+    </button>
+  </div>
+  <div class="adult-grid" id="adult-grid"></div>
+</section>
+
+<!-- STATS -->
+<section id="estadisticas" class="sec sec-dark">
+  <div class="wrap">
+    <div class="sec-head center rv">
+      <div class="sec-lbl">En números</div>
+      <h2 class="sec-title">Resultados que <span class="acc-g">hablan</span></h2>
+    </div>
+    <div class="stats-grid">
+      <div class="stat rv" style="transition-delay:.06s">
+        <div class="stat-n" data-target="9" data-suffix="+">0</div>
+        <div class="stat-l">Proyectos completados</div>
+      </div>
+      <div class="stat rv" style="transition-delay:.14s">
+        <div class="stat-n" data-target="2" data-suffix="">0</div>
+        <div class="stat-l">Desarrolladores</div>
+      </div>
+      <div class="stat rv" style="transition-delay:.22s">
+        <div class="stat-n" data-target="100" data-suffix="%">0</div>
+        <div class="stat-l">Código hecho a mano</div>
+      </div>
+      <div class="stat rv" style="transition-delay:.30s">
+        <div class="stat-n" data-target="12" data-suffix="+">0</div>
+        <div class="stat-l">Tecnologías dominadas</div>
+      </div>
+      <div class="stat rv" style="transition-delay:.38s">
+        <div class="stat-n" data-target="24" data-suffix="/7">0</div>
+        <div class="stat-l">Soporte post-lanzamiento</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EQUIPO -->
+<section id="equipo" class="sec">
+  <div class="wrap">
+    <div class="sec-head center rv">
+      <div class="sec-lbl">Quiénes somos</div>
+      <h2 class="sec-title">El equipo <span class="acc-g">detrás</span></h2>
+    </div>
+    <div class="team-story rv">
+      <p class="team-story-lead">Dos amigos que se conocieron a los <span class="acc-g">12 años en la escuela</span> y que un día decidieron que los negocios de su país merecían algo mejor que sitios genéricos y plantillas sin alma.</p>
+      <div class="team-story-body">
+        <p class="team-story-p">Lo que empezó en un salón de clases de Santo Domingo — bromas entre compañeros, proyectos escolares, la misma obsesión por la tecnología — terminó convirtiéndose en algo mucho más grande. Yeicer y Jhohancer no se juntaron por conveniencia ni por negocio: llevan más de una década construyendo confianza, y eso se nota en cada proyecto que firman.</p>
+        <p class="team-story-p">Mientras otros veían un hobby, ellos veían una oportunidad. Yeicer perfeccionando cada pixel, cada animación, cada detalle visual que hace que un usuario se quede. Jhohancer construyendo los sistemas que hacen que todo funcione de verdad: bases de datos, lógica de negocio, APIs, seguridad. <strong>Una amistad de años convertida en la dupla técnica más sólida que puedes encontrar.</strong></p>
+        <p class="team-story-p">Cuando unieron fuerzas oficialmente, el resultado habló solo. Diseño que enamora + backend que no falla = webs que realmente convierten visitantes en clientes. Así nació YouDev: no como una empresa de tecnología, sino como una misión compartida desde la infancia.</p>
+      </div>
+      <div class="team-duo">
+        <div class="team-pill">
+          <div class="team-pill-av g">Y</div>
+          <div class="team-pill-info">
+            <div class="team-pill-name">Yeicer</div>
+            <div class="team-pill-role"><span>Frontend & UI/UX</span> — El que hace que todo se vea increíble. HTML, CSS, React, diseño y la magia que hace que los usuarios no puedan dejar de scrollear.</div>
+          </div>
+        </div>
+        <div class="team-pill">
+          <div class="team-pill-av c">J</div>
+          <div class="team-pill-info">
+            <div class="team-pill-name">Jhohancer</div>
+            <div class="team-pill-role"><span>Full-Stack & Backend</span> — El que construye el motor. Node.js, SQL, APIs, seguridad, y todo lo que hace que una web sea rápida, segura y confiable.</div>
+          </div>
+        </div>
+      </div>
+      <div class="team-values rv" style="transition-delay:.1s">
+        <div class="team-val">
+          <div class="team-val-ico"><i class="fa-solid fa-code"></i></div>
+          <h4>Código hecho a mano</h4>
+          <p>Sin plantillas. Sin atajos. Cada línea de código escrita para tu negocio específico.</p>
+        </div>
+        <div class="team-val">
+          <div class="team-val-ico"><i class="fa-solid fa-rocket"></i></div>
+          <h4>Entrega rápida</h4>
+          <p>Sabemos que el tiempo es dinero. Tu web lista en el tiempo prometido, siempre.</p>
+        </div>
+        <div class="team-val">
+          <div class="team-val-ico"><i class="fa-solid fa-headset"></i></div>
+          <h4>Soporte real</h4>
+          <p>No desaparecemos al lanzar. Estamos contigo después del lanzamiento.</p>
+        </div>
+        <div class="team-val">
+          <div class="team-val-ico"><i class="fa-solid fa-heart"></i></div>
+          <h4>Orgullo dominicano</h4>
+          <p>Talento local construyendo el futuro digital de los negocios dominicanos.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HISTORIA -->
+<section id="historia" class="sec sec-dark">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <div class="sec-lbl">Nuestra historia</div>
+    </div>
+    <div class="historia-inner">
+      <div class="historia-left rv">
+        <h2 class="historia-big">De la <span class="acc-g">idea</span><br>al código.</h2>
+        <p class="historia-intro">Santo Domingo, República Dominicana. Dos amigos de la infancia, una pregunta que no los dejaba dormir: <em>¿por qué los negocios de nuestro país no tienen la presencia digital que se merecen?</em> Esa pregunta — nacida entre pupitres escolares — se convirtió en YouDev.</p>
+        <p class="historia-intro">No somos una corporación. Somos un equipo pequeño, pero con capacidades grandes y una filosofía clara: <strong style="color:#e4e4f0">cada peso que inviertes en tu web debe regresar multiplicado en clientes reales.</strong></p>
+        <div class="historia-quote">
+          <strong>"El código es nuestro idioma, pero el objetivo siempre es el mismo:</strong> hacer que tu negocio destaque donde más importa hoy — en internet. Porque si no estás en la web, para la mitad del mundo simplemente no existes."
+        </div>
+      </div>
+      <div class="ht-list rv" style="transition-delay:.2s">
+        <div class="ht-item">
+          <div class="ht-dot"><i class="fa-solid fa-seedling"></i></div>
+          <div class="ht-body">
+            <div class="ht-year">Los inicios</div>
+            <div class="ht-ttl">Dos freelancers con una visión</div>
+            <div class="ht-txt">Yeicer y Jhohancer comenzaron por separado tomando proyectos freelance en Santo Domingo. Cada uno con su especialidad — frontend y backend — pero la misma pasión por el buen código. Aprendiendo, fallando, mejorando. Solos primero, pero con la certeza de que había algo más grande por construir.</div>
+          </div>
+        </div>
+        <div class="ht-item">
+          <div class="ht-dot"><i class="fa-solid fa-lightbulb"></i></div>
+          <div class="ht-body">
+            <div class="ht-year">El momento clave</div>
+            <div class="ht-ttl">Un negocio que perdía clientes sin saberlo</div>
+            <div class="ht-txt">Fue construyendo el sitio de una pastelería local que lo vieron claro. El dueño no sabía que sus competidores recibían pedidos por WhatsApp gracias a su web mientras él dependía solo del boca a boca. En dos semanas con una web nueva, empezó a recibir mensajes de clientes que jamás hubiese alcanzado de otra forma. Ese momento lo cambió todo.</div>
+          </div>
+        </div>
+        <div class="ht-item">
+          <div class="ht-dot"><i class="fa-solid fa-handshake"></i></div>
+          <div class="ht-body">
+            <div class="ht-year">La alianza</div>
+            <div class="ht-ttl">Nace la sociedad perfecta</div>
+            <div class="ht-txt">Se dieron cuenta de que juntos ofrecían algo completo que nadie más podía igualar en su mercado: diseño que enamora + sistemas que funcionan + un precio justo para el empresario dominicano. Frontend y backend en perfecta sincronía. Decidieron unir fuerzas y hacer de YouDev una realidad.</div>
+          </div>
+        </div>
+        <div class="ht-item">
+          <div class="ht-dot"><i class="fa-solid fa-rocket"></i></div>
+          <div class="ht-body">
+            <div class="ht-year">YouDev nace</div>
+            <div class="ht-ttl">Los primeros proyectos reales</div>
+            <div class="ht-txt">Con los primeros proyectos publicados — plataformas de cursos, marketplaces de servicios, sistemas de gestión, tiendas online — YouDev demostró que el talento dominicano no tiene techo. Cada proyecto, una nueva historia de un negocio que pasó de ser invisible a ser encontrado.</div>
+          </div>
+        </div>
+        <div class="ht-item">
+          <div class="ht-dot"><i class="fa-solid fa-star"></i></div>
+          <div class="ht-body">
+            <div class="ht-year">Hoy</div>
+            <div class="ht-ttl">9+ proyectos y sin parar</div>
+            <div class="ht-txt">Desde pastelerías hasta herramientas de ciberseguridad para Linux — construimos webs para todo tipo de negocio. El equipo crece, la cartera de proyectos crece, y la misión sigue siendo la misma: digitalizar el talento dominicano, un negocio a la vez.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- POR QUÉ NECESITAS UNA WEB -->
+<section id="por-que-web" class="sec">
+  <div class="wrap">
+    <div class="whyweb-hero rv">
+      <div class="sec-lbl" style="justify-content:center;margin-bottom:.9rem">La verdad que nadie te dice</div>
+      <h2 class="whyweb-big">Tu negocio existe.<br>Pero en internet, <span class="acc-p">¿existe?</span></h2>
+      <p class="whyweb-sub">Cada día que pasa sin una web profesional, tu competencia está capturando los clientes que podrían ser tuyos. No es exageración — es matemática simple.</p>
+    </div>
+
+    <div class="whyweb-comparison rv" style="transition-delay:.1s">
+      <div class="ww-col bad">
+        <div class="ww-col-head">
+          <i class="fa-solid fa-circle-xmark"></i>
+          <h3>Sin web profesional</h3>
+        </div>
+        <ul class="ww-list">
+          <li><i class="fa-solid fa-xmark"></i><span>Clientes potenciales te buscan en Google y encuentran a tu competencia</span></li>
+          <li><i class="fa-solid fa-xmark"></i><span>Tu negocio parece poco serio o desactualizado</span></li>
+          <li><i class="fa-solid fa-xmark"></i><span>Dependes 100% del boca a boca y las redes sociales (que cambian sus algoritmos)</span></li>
+          <li><i class="fa-solid fa-xmark"></i><span>No puedes mostrar tus productos o servicios las 24 horas</span></li>
+          <li><i class="fa-solid fa-xmark"></i><span>Pierdes credibilidad frente a clientes que investigan antes de comprar</span></li>
+          <li><i class="fa-solid fa-xmark"></i><span>No tienes forma de medir cuántas personas se interesan en lo que ofreces</span></li>
+        </ul>
+      </div>
+      <div class="ww-col good">
+        <div class="ww-col-head">
+          <i class="fa-solid fa-circle-check"></i>
+          <h3>Con una web profesional</h3>
+        </div>
+        <ul class="ww-list">
+          <li><i class="fa-solid fa-check"></i><span>Apareces cuando alguien busca lo que ofreces, a cualquier hora del día</span></li>
+          <li><i class="fa-solid fa-check"></i><span>Proyectas una imagen sólida y profesional que genera confianza inmediata</span></li>
+          <li><i class="fa-solid fa-check"></i><span>Tu vitrina digital trabaja por ti mientras tú duermes o atiendes otros clientes</span></li>
+          <li><i class="fa-solid fa-check"></i><span>Clientes de todo el país (y el mundo) pueden encontrarte y contactarte</span></li>
+          <li><i class="fa-solid fa-check"></i><span>Automatizas consultas, pedidos y reservas sin contratar personal extra</span></li>
+          <li><i class="fa-solid fa-check"></i><span>Sabes exactamente cuántas personas visitan tu negocio digital y qué les interesa</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="whyweb-stats rv" style="transition-delay:.15s">
+      <div class="ww-stat">
+        <div class="ww-stat-n">81%</div>
+        <div class="ww-stat-l">de las personas investigan en internet ANTES de comprar en cualquier tienda</div>
+      </div>
+      <div class="ww-stat">
+        <div class="ww-stat-n">75%</div>
+        <div class="ww-stat-l">de los usuarios juzga la credibilidad de un negocio por su sitio web</div>
+      </div>
+      <div class="ww-stat">
+        <div class="ww-stat-n">3.5B</div>
+        <div class="ww-stat-l">búsquedas diarias en Google — ¿cuántas de ellas son de clientes buscándote a ti?</div>
+      </div>
+      <div class="ww-stat">
+        <div class="ww-stat-n">24/7</div>
+        <div class="ww-stat-l">tu web trabaja para ti incluso cuando tú no puedes atender</div>
+      </div>
+    </div>
+
+    <div class="whyweb-story rv" style="transition-delay:.2s">
+      <span class="highlight">Piénsalo así:</span>
+      <p>Imagina que tienes la mejor tienda de ropa del barrio. Productos únicos, precios justos, atención inigualable. Pero tu tienda no tiene letrero, no está en ningún mapa, y solo la conocen los que ya te conocen. <strong>Eso es exactamente lo que le pasa a tu negocio sin una web.</strong></p>
+      <p>Hoy, cuando alguien necesita algo — comida, un servicio, un producto — lo primero que hace es sacar el teléfono y buscar en Google. Si no apareces ahí, sencillamente no existes para esa persona. Y esa persona va a encontrar a alguien que sí aparece. Quizás tu competencia directa.</p>
+      <p>Una web profesional no es un lujo. <strong>Es la diferencia entre un negocio que crece y uno que sobrevive.</strong> Es tu vendedor más confiable, el que nunca descansa, nunca se enferma y atiende a cientos de personas al mismo tiempo. Y en YouDev, lo construimos hecho a medida para tu negocio, con diseño que impacta y código que funciona.</p>
+      <span class="highlight" style="font-size:1.2rem;color:#e4e4f0">¿Cuánto te está costando no tener una web? <span class="acc-g">Más de lo que crees.</span></span>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIOS -->
+<section id="testimonios" class="sec sec-dark">
+  <div class="wrap">
+    <div class="sec-head center rv">
+      <div class="sec-lbl">Lo que dicen nuestros clientes</div>
+      <h2 class="sec-title">Resultados que <span class="acc-g">hablan</span></h2>
+      <p class="sec-desc">Cada proyecto es una historia de un negocio que dio el salto digital. Estas son algunas de ellas.</p>
+    </div>
+    <div class="test-grid">
+      <div class="test-card rv" style="transition-delay:.06s">
+        <div class="test-stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+        <p class="test-text">Antes dependía solo del boca a boca. Desde que YouDev me hizo la web, recibo mensajes de clientes que nunca hubiesen sabido de mi pastelería. El diseño quedó exactamente como lo soñé y mejor.</p>
+        <div class="test-author">
+          <div class="test-av" style="background:linear-gradient(135deg,#ff9500,#ff2055)">M</div>
+          <div class="test-author-info">
+            <div class="test-author-name">María González</div>
+            <div class="test-author-biz">DulzonaRD — Pastelería Artesanal</div>
+          </div>
+        </div>
+      </div>
+      <div class="test-card rv" style="transition-delay:.12s">
+        <div class="test-stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+        <p class="test-text">Lo que más me sorprendió fue la velocidad. En menos de dos semanas tenía mi plataforma lista y funcionando. El equipo responde rápido y explica todo con paciencia. No se arrepienta de contratarlos.</p>
+        <div class="test-author">
+          <div class="test-av" style="background:linear-gradient(135deg,#00d4ff,#9b59ff)">R</div>
+          <div class="test-author-info">
+            <div class="test-author-name">Rafael Méndez</div>
+            <div class="test-author-biz">Emprendedor digital, Santo Domingo</div>
+          </div>
+        </div>
+      </div>
+      <div class="test-card rv" style="transition-delay:.18s">
+        <div class="test-stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+        <p class="test-text">Tenía miedo de que fuera complicado o muy caro. YouDev me explicó todo desde cero, el precio fue justo y el resultado superó mis expectativas. Mi negocio ahora parece de otra liga en internet.</p>
+        <div class="test-author">
+          <div class="test-av" style="background:linear-gradient(135deg,#00ff88,#00d4ff)">C</div>
+          <div class="test-author-info">
+            <div class="test-author-name">Carmen Reyes</div>
+            <div class="test-author-biz">Boutique de ropa, Santiago</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq" class="sec">
+  <div class="wrap">
+    <div class="sec-head center rv">
+      <div class="sec-lbl">Preguntas frecuentes</div>
+      <h2 class="sec-title">Lo que siempre <span class="acc-g">preguntan</span></h2>
+    </div>
+    <div class="faq-list rv" style="transition-delay:.1s">
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <h3>¿Cuánto cuesta hacer una web con YouDev?</h3>
+          <i class="fa-solid fa-plus"></i>
+        </div>
+        <div class="faq-a"><div class="faq-a-inner">Cada proyecto es diferente, por eso no manejamos precios fijos de menú. Conversamos contigo, entendemos lo que necesita tu negocio y te damos un presupuesto claro y justo. Lo que sí garantizamos: precios honestos adaptados a la realidad del mercado dominicano, sin sorpresas.</div></div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <h3>¿Cuánto tiempo tardan en entregar mi web?</h3>
+          <i class="fa-solid fa-plus"></i>
+        </div>
+        <div class="faq-a"><div class="faq-a-inner">Dependiendo de la complejidad: una web de negocio estándar la entregamos entre 1 y 3 semanas. Proyectos más complejos con sistemas de gestión, e-commerce o plataformas pueden tomar entre 3 y 6 semanas. Siempre con plazos claros y cumplidos.</div></div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <h3>¿Necesito saber de tecnología para trabajar con ustedes?</h3>
+          <i class="fa-solid fa-plus"></i>
+        </div>
+        <div class="faq-a"><div class="faq-a-inner">Para nada. Nos encargamos de todo el proceso técnico. Tu trabajo es contarnos sobre tu negocio, tus clientes y lo que quieres lograr. Nosotros lo traducimos en código. Al final, te entregamos todo listo para usar y te explicamos lo que necesitas saber.</div></div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <h3>¿Qué pasa después de lanzar mi web?</h3>
+          <i class="fa-solid fa-plus"></i>
+        </div>
+        <div class="faq-a"><div class="faq-a-inner">No desaparecemos. Ofrecemos soporte post-lanzamiento para correcciones, ajustes y dudas. Si necesitas actualizaciones, nuevas funcionalidades o mantenimiento, seguimos contigo. Tu éxito digital es nuestro éxito también.</div></div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <h3>¿La web va a funcionar bien en celulares?</h3>
+          <i class="fa-solid fa-plus"></i>
+        </div>
+        <div class="faq-a"><div class="faq-a-inner">Absolutamente. Más del 70% del tráfico web hoy viene de celulares. Todas las webs que construimos son 100% responsive — se ven y funcionan perfectamente en teléfonos, tablets y computadoras. Eso no es opcional para nosotros, es estándar.</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROCESS -->
+<section id="proceso" class="sec">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <div class="sec-lbl">Cómo trabajamos</div>
+      <h2 class="sec-title">Un proceso <span class="acc-g">claro</span></h2>
+      <p class="sec-desc">Trabajamos de forma ordenada para que tengas tu web lista rápido y sin dolores de cabeza.</p>
+    </div>
+    <div class="proc-grid">
+      <div class="proc-step rv" style="transition-delay:.06s">
+        <div class="proc-n">01</div>
+        <div class="proc-ico"><i class="fa-solid fa-comments"></i></div>
+        <h3>Conversamos</h3>
+        <p>Entendemos tu negocio, tus necesidades y lo que quieres transmitir con tu presencia digital.</p>
+      </div>
+      <div class="proc-step rv" style="transition-delay:.12s">
+        <div class="proc-n">02</div>
+        <div class="proc-ico"><i class="fa-solid fa-pen-ruler"></i></div>
+        <h3>Diseñamos</h3>
+        <p>Creamos un diseño personalizado, alineado con tu marca y tus objetivos de negocio.</p>
+      </div>
+      <div class="proc-step rv" style="transition-delay:.18s">
+        <div class="proc-n">03</div>
+        <div class="proc-ico"><i class="fa-solid fa-code"></i></div>
+        <h3>Desarrollamos</h3>
+        <p>Construimos tu web con código limpio, rápido y responsive para todos los dispositivos.</p>
+      </div>
+      <div class="proc-step rv" style="transition-delay:.24s">
+        <div class="proc-n">04</div>
+        <div class="proc-ico"><i class="fa-solid fa-vials"></i></div>
+        <h3>Probamos</h3>
+        <p>Verificamos que todo funcione perfectamente en todos los navegadores y dispositivos antes de salir.</p>
+      </div>
+      <div class="proc-step rv" style="transition-delay:.30s">
+        <div class="proc-n">05</div>
+        <div class="proc-ico"><i class="fa-solid fa-rocket"></i></div>
+        <h3>Lanzamos</h3>
+        <p>Publicamos tu web y te entregamos todo listo para que tu negocio brille en internet.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TECH -->
+<section id="tecnologias" class="sec sec-dark">
+  <div class="wrap">
+    <div class="sec-head center rv">
+      <div class="sec-lbl">Stack tecnológico</div>
+      <h2 class="sec-title">Herramientas que <span class="acc-g">usamos</span></h2>
+      <p class="sec-desc">Trabajamos con tecnologías modernas y probadas para garantizar webs rápidas, seguras y escalables.</p>
+    </div>
+    <div class="tech-wrap rv" style="transition-delay:.1s">
+      <div class="tech-pill"><i class="fa-brands fa-html5"></i> HTML5</div>
+      <div class="tech-pill"><i class="fa-brands fa-css3-alt"></i> CSS3</div>
+      <div class="tech-pill"><i class="fa-brands fa-js"></i> JavaScript</div>
+      <div class="tech-pill"><i class="fa-brands fa-react"></i> React</div>
+      <div class="tech-pill"><i class="fa-brands fa-node-js"></i> Node.js</div>
+      <div class="tech-pill"><i class="fa-solid fa-database"></i> SQL &amp; NoSQL</div>
+      <div class="tech-pill"><i class="fa-brands fa-php"></i> PHP</div>
+      <div class="tech-pill"><i class="fa-brands fa-git-alt"></i> Git</div>
+      <div class="tech-pill"><i class="fa-brands fa-github"></i> GitHub Pages</div>
+      <div class="tech-pill"><i class="fa-solid fa-mobile-screen-button"></i> Responsive Design</div>
+      <div class="tech-pill"><i class="fa-solid fa-magnifying-glass"></i> SEO</div>
+      <div class="tech-pill"><i class="fa-solid fa-bolt"></i> Performance</div>
+      <div class="tech-pill"><i class="fa-solid fa-shield-halved"></i> Web Security</div>
+      <div class="tech-pill"><i class="fa-brands fa-linux"></i> Linux</div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contacto" class="sec">
+  <div class="wrap">
+    <div class="contact-box rv">
+      <h2>¿Listo para tener<br>tu <span class="acc-g">web?</span></h2>
+      <p>Cuéntanos tu proyecto y te construimos una presencia digital que realmente destaque. Sin vueltas, sin complicaciones.</p>
+      <div class="contact-btns">
+        <a href="mailto:youdev@gmail.com" class="btn-g">
+          <i class="fa-solid fa-envelope"></i> Enviar correo
+        </a>
+        <a href="https://wa.me/18091234567" target="_blank" class="btn-out">
+          <i class="fa-brands fa-whatsapp"></i> WhatsApp
+        </a>
+      </div>
+      <div class="contact-meta">
+        <div class="cmeta-item"><i class="fa-solid fa-location-dot"></i><span>Santo Domingo, RD</span></div>
+        <div class="cmeta-item"><i class="fa-brands fa-github"></i><a href="https://github.com/youezx" target="_blank">github.com/youezx</a></div>
+        <div class="cmeta-item"><i class="fa-solid fa-clock"></i><span>Respuesta en &lt;24h</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="foot-in">
+    <div class="foot-brand">
+      <div class="foot-logo"><span>You</span>Dev</div>
+      <p class="foot-copy">© 2025 YouDev. Todos los derechos reservados.</p>
+      <p class="foot-tagline">Hecho con 💚 en República Dominicana</p>
+    </div>
+    <ul class="foot-links">
+      <li><a href="#hero">Inicio</a></li>
+      <li><a href="#portafolio">Portafolio</a></li>
+      <li><a href="#equipo">Equipo</a></li>
+      <li><a href="#historia">Historia</a></li>
+      <li><a href="#proceso">Proceso</a></li>
+      <li><a href="#contacto">Contacto</a></li>
+    </ul>
+    <div class="foot-right">
+      <p class="foot-devs">Yeicer &amp; Jhohancer</p>
+      <button class="foot-18" onclick="openAdultModal()" title="Zona restringida +18">
+        <i class="fa-solid fa-lock"></i> zona restringida
+      </button>
+    </div>
+  </div>
+</footer>
+
+<!-- ADULT MODAL -->
+<div id="adult-modal">
+  <div class="modal-overlay" onclick="closeAdultModal()"></div>
+  <div class="modal-box">
+    <div class="modal-icon">🔞</div>
+    <div class="modal-warn-badge">
+      <i class="fa-solid fa-triangle-exclamation"></i>&nbsp;Contenido para adultos
+    </div>
+    <h3>Verificación de edad</h3>
+    <p>Esta sección contiene proyectos con contenido exclusivo para mayores de 18 años. Al continuar declaras que eres mayor de edad y que este tipo de contenido es legal en tu país o jurisdicción.</p>
+    <div class="modal-btns">
+      <button class="modal-confirm" onclick="confirmAdult()">
+        <i class="fa-solid fa-check"></i> Soy mayor de 18 años — Entrar
+      </button>
+      <button class="modal-cancel" onclick="closeAdultModal()">No, salir</button>
+    </div>
+    <p class="modal-disclaimer">Al hacer clic en "Entrar" declaras bajo tu propia responsabilidad que cumples con los requisitos de edad y legales de tu localidad.</p>
   </div>
 </div>
 
 <script>
-// ─── CANVAS & CTX ───────────────────────────────────────────────────
-const canvas  = document.getElementById('canvas');
-const ctx     = canvas.getContext('2d');
-const W = canvas.width, H = canvas.height;
-
-const scoreDisplay = document.getElementById('score-display');
-const overlay      = document.getElementById('overlay');
-const startBtn     = document.getElementById('start-btn');
-
-// ─── GAME STATE ─────────────────────────────────────────────────────
-let state = 'start'; // 'start' | 'playing' | 'dead'
-let score = 0, best = 0;
-let raf;
-
-// ─── COLORS ─────────────────────────────────────────────────────────
-const SKY_TOP    = '#70c5ce';
-const SKY_BOT    = '#c9f0f7';
-const GROUND_COL = '#ded895';
-const GROUND_DARK= '#c2b669';
-const PIPE_LIGHT = '#74bf2e';
-const PIPE_DARK  = '#558a20';
-const PIPE_CAP   = '#5da010';
-
-// ─── GROUND ─────────────────────────────────────────────────────────
-const GROUND_H = 80;
-const GROUND_Y = H - GROUND_H;
-let groundX = 0;
-
-// ─── BIRD ───────────────────────────────────────────────────────────
-const BIRD = {
-  x: 80, y: H/2 - 20,
-  w: 38, h: 28,
-  vy: 0,
-  gravity: 0.5,
-  flapPower: -9,
-  rotation: 0,
-  flapAnim: 0,  // 0=mid 1=up 2=down wing
-  flapTimer: 0,
-  reset() {
-    this.y = H/2 - 20;
-    this.vy = 0;
-    this.rotation = 0;
-    this.flapAnim = 0;
-    this.flapTimer = 0;
+/* ── PROJECTS DATA ── */
+const PROJECTS = [
+  {
+    name:'FlappyBird',
+    url:'https://youezx.github.io/FlappyBird/',
+    desc:'Recreación del icónico juego Flappy Bird construida desde cero con JavaScript puro. Canvas, física de gravedad, colisiones y sistema de puntuación — todo hecho a mano sin librerías.',
+    tags:['Gaming','JavaScript','Canvas','Juego'],
+    category:'gaming',
+    color:'#ff9500'
   },
-  flap() {
-    this.vy = this.flapPower;
-    this.flapAnim = 1;
-    this.flapTimer = 8;
+  {
+    name:'HackingTools',
+    url:'https://youezx.github.io/HackingTools/',
+    desc:'Colección de herramientas de hacking y ciberseguridad para Linux. Scripts, recursos y utilidades pensadas para profesionales de la seguridad informática.',
+    tags:['Ciberseguridad','Linux','Hacking'],
+    category:'seguridad',
+    color:'#00ff88'
   },
-  update() {
-    this.vy += this.gravity;
-    this.y  += this.vy;
-    this.rotation = Math.min(Math.PI/2, Math.max(-0.4, this.vy * 0.07));
-    if (this.flapTimer > 0) {
-      this.flapTimer--;
-      this.flapAnim = this.flapTimer > 4 ? 1 : 2;
-    } else {
-      this.flapAnim = 0;
-    }
+  {
+    name:'DulzonaRd',
+    url:'https://youezx.github.io/DulzonaRd/',
+    desc:'Cake Project — Web completa para una pastelería dominicana. Catálogo de productos, pedidos personalizados y una presencia digital que endulza.',
+    tags:['Pastelería','RD','Negocios'],
+    category:'negocios',
+    color:'#ff9500'
   },
-  get top()    { return this.y - this.h/2; },
-  get bottom() { return this.y + this.h/2; },
-  get left()   { return this.x - this.w/2; },
-  get right()  { return this.x + this.w/2; },
-};
-
-// ─── PIPES ──────────────────────────────────────────────────────────
-const GAP      = 150;
-const PIPE_W   = 60;
-const PIPE_SPD = 3;
-let pipes = [];
-let pipeTimer = 0;
-const PIPE_INTERVAL = 90;
-
-function spawnPipe() {
-  const minTop = 80, maxTop = GROUND_Y - GAP - 80;
-  const topH = Math.floor(Math.random() * (maxTop - minTop) + minTop);
-  pipes.push({ x: W + 20, topH, scored: false });
-}
-
-function drawPipe(x, topH) {
-  const botY  = topH + GAP;
-  const botH  = GROUND_Y - botY;
-  const capW  = PIPE_W + 12;
-  const capH  = 26;
-
-  // TOP PIPE
-  // body
-  ctx.fillStyle = PIPE_LIGHT;
-  ctx.fillRect(x, 0, PIPE_W, topH - capH);
-  // right shadow
-  ctx.fillStyle = PIPE_DARK;
-  ctx.fillRect(x + PIPE_W - 10, 0, 10, topH - capH);
-  // cap
-  ctx.fillStyle = PIPE_CAP;
-  ctx.fillRect(x - 6, topH - capH, capW, capH);
-  ctx.fillStyle = PIPE_DARK;
-  ctx.fillRect(x - 6 + capW - 10, topH - capH, 10, capH);
-  // inner highlight
-  ctx.fillStyle = 'rgba(255,255,255,0.15)';
-  ctx.fillRect(x + 4, 0, 8, topH - capH);
-
-  // BOTTOM PIPE
-  ctx.fillStyle = PIPE_LIGHT;
-  ctx.fillRect(x, botY + capH, PIPE_W, botH - capH);
-  ctx.fillStyle = PIPE_DARK;
-  ctx.fillRect(x + PIPE_W - 10, botY + capH, 10, botH - capH);
-  ctx.fillStyle = PIPE_CAP;
-  ctx.fillRect(x - 6, botY, capW, capH);
-  ctx.fillStyle = PIPE_DARK;
-  ctx.fillRect(x - 6 + capW - 10, botY, 10, capH);
-  ctx.fillStyle = 'rgba(255,255,255,0.15)';
-  ctx.fillRect(x + 4, botY + capH, 8, botH - capH);
-}
-
-// ─── CLOUDS ─────────────────────────────────────────────────────────
-const clouds = [
-  { x: 60,  y: 60,  s: 1.0 },
-  { x: 200, y: 100, s: 0.7 },
-  { x: 300, y: 45,  s: 0.85 },
-  { x: 500, y: 80,  s: 1.1 },
+  {
+    name:'YouScripts',
+    url:'https://youezx.github.io/YouScripts/',
+    desc:'Plataforma de scripts y exploits para Roblox. Sistema de carga, descarga y gestión de herramientas para gaming avanzado.',
+    tags:['Gaming','Scripts','Roblox'],
+    category:'gaming',
+    color:'#00ff88'
+  },
+  {
+    name:'YouService',
+    url:'https://youezx.github.io/YouService/',
+    desc:'Marketplace de servicios digitales con sistema de pagos integrado. Publica y contrata servicios de cualquier tipo fácilmente.',
+    tags:['E-commerce','Servicios','Pagos'],
+    category:'negocios',
+    color:'#00d4ff'
+  },
+  {
+    name:'YouCredit',
+    url:'https://youezx.github.io/YouCredit/',
+    desc:'Sistema de gestión de préstamos locales. Registra, administra y recuerda créditos desde una agenda inteligente en el navegador.',
+    tags:['Finanzas','Gestión','Préstamos'],
+    category:'herramientas',
+    color:'#9b59ff'
+  },
+  {
+    name:'CursaDevs',
+    url:'https://youezx.github.io/CursaDev/',
+    desc:'Plataforma de cursos de programación y desarrollo web. Aprende HTML, CSS, JavaScript y más desde cero.',
+    tags:['Educación','Cursos','Programación'],
+    category:'educacion',
+    color:'#ff9500'
+  },
+  {
+    name:'GestiónNegocios',
+    url:'https://youezx.github.io/Gestionnegocios/',
+    desc:'Sistema web para registrar y administrar negocios locales. Lleva el control de tu empresa directamente desde el navegador.',
+    tags:['Negocios','Gestión','Admin'],
+    category:'negocios',
+    color:'#ff2055'
+  }
 ];
 
-function drawCloud(cx, cy, s) {
-  ctx.fillStyle = 'rgba(255,255,255,0.9)';
-  const r = (w, x, y) => ctx.fillRect(cx + x*s, cy + y*s, w*s, w*s);
-  r(20, 0,  10); r(20, 20, 10); r(20, 40, 10);
-  r(20, 10, 0);  r(20, 20, 0);
-  r(20, 10, 20); r(20, 20, 20);
-}
-
-// ─── DRAW BIRD ──────────────────────────────────────────────────────
-function drawBird(bx, by, rot, wingState) {
-  ctx.save();
-  ctx.translate(bx, by);
-  ctx.rotate(rot);
-
-  // Shadow
-  ctx.fillStyle = 'rgba(0,0,0,0.15)';
-  ctx.beginPath();
-  ctx.ellipse(2, 16, 16, 6, 0, 0, Math.PI*2);
-  ctx.fill();
-
-  // Body
-  ctx.fillStyle = '#f5c842';
-  // pixel body grid
-  const body = [
-    [0,1,1,1,0],
-    [1,1,1,1,1],
-    [1,1,1,1,1],
-    [1,1,1,1,1],
-    [0,1,1,1,0],
-  ];
-  const bw = 7;
-  body.forEach((row, r) => row.forEach((v, c) => {
-    if (v) ctx.fillRect(-17 + c*bw, -12 + r*bw, bw, bw);
-  }));
-
-  // White belly patch
-  ctx.fillStyle = '#fff9e6';
-  ctx.fillRect(-10, -4, 10, 10);
-
-  // Wing
-  ctx.fillStyle = '#e0a820';
-  if (wingState === 1) {
-    // Wing up
-    ctx.fillRect(-14, -18, 18, 8);
-  } else if (wingState === 2) {
-    // Wing down
-    ctx.fillRect(-14, -2, 18, 10);
-  } else {
-    // Wing mid
-    ctx.fillRect(-14, -10, 18, 8);
+const ADULT_PROJECTS = [
+  {
+    name:'YouPornX',
+    url:'https://youpornx.github.io/',
+    desc:'Plataforma de contenido para adultos con sistema de acceso controlado y autenticación segura.',
+    tags:['Plataforma','+18','Adultos'],
+    color:'#ff2055'
+  },
+  {
+    name:'YouGenerator',
+    url:'https://youpornx.github.io/YouGenerator/',
+    desc:'Herramienta generadora de código con campos dinámicos personalizables. Complemento oficial de la plataforma YouPornX.',
+    tags:['Generador','Herramienta','Código'],
+    color:'#ff2055'
   }
-  // Wing shading
-  ctx.fillStyle = '#c8901a';
-  ctx.fillRect(-14 + 12, wingState===1 ? -18 : wingState===2 ? -2 : -10, 6, wingState===1?8:wingState===2?10:8);
+];
 
-  // Eye white
-  ctx.fillStyle = '#fff';
-  ctx.fillRect(4, -12, 12, 10);
-  // Pupil
-  ctx.fillStyle = '#111';
-  ctx.fillRect(10, -10, 5, 6);
-  // Eye shine
-  ctx.fillStyle = '#fff';
-  ctx.fillRect(12, -10, 2, 2);
-
-  // Beak
-  ctx.fillStyle = '#f08000';
-  ctx.fillRect(14, -5, 10, 6);
-  ctx.fillStyle = '#c86000';
-  ctx.fillRect(14, -1, 10, 3);
-
-  ctx.restore();
-}
-
-// ─── DRAW GROUND ────────────────────────────────────────────────────
-function drawGround(gx) {
-  // main ground
-  ctx.fillStyle = GROUND_COL;
-  ctx.fillRect(0, GROUND_Y, W, GROUND_H);
-  // dark strip
-  ctx.fillStyle = GROUND_DARK;
-  ctx.fillRect(0, GROUND_Y, W, 8);
-  // pixel bumps
-  ctx.fillStyle = GROUND_COL;
-  for (let i = 0; i < 20; i++) {
-    const bx = ((gx * 0.5 + i * 32) % (W + 32)) - 16;
-    ctx.fillRect(bx, GROUND_Y, 16, 8);
-  }
-}
-
-// ─── DRAW SKY ───────────────────────────────────────────────────────
-function drawBackground() {
-  const grad = ctx.createLinearGradient(0, 0, 0, GROUND_Y);
-  grad.addColorStop(0, SKY_TOP);
-  grad.addColorStop(1, SKY_BOT);
-  ctx.fillStyle = grad;
-  ctx.fillRect(0, 0, W, GROUND_Y);
-}
-
-// ─── PARTICLES ──────────────────────────────────────────────────────
-let particles = [];
-function spawnFeathers(x, y) {
-  for (let i = 0; i < 12; i++) {
-    particles.push({
-      x, y,
-      vx: (Math.random()-0.5) * 6,
-      vy: (Math.random()-1.2) * 5,
-      life: 40,
-      col: ['#f5c842','#e0a820','#fff9e6'][Math.floor(Math.random()*3)],
-      size: 4 + Math.random() * 5,
-    });
-  }
-}
-
-// ─── COLLISION ──────────────────────────────────────────────────────
-function checkCollision() {
-  if (BIRD.bottom >= GROUND_Y || BIRD.top <= 0) return true;
-  for (const p of pipes) {
-    const capX = p.x - 6, capW2 = PIPE_W + 12;
-    const bL = BIRD.left + 6, bR = BIRD.right - 4;
-    const bT = BIRD.top + 4, bB = BIRD.bottom - 4;
-    if (bR > capX && bL < capX + capW2) {
-      if (bT < p.topH || bB > p.topH + GAP) return true;
-    }
-  }
-  return false;
-}
-
-// ─── SCORE PANEL (game over) ─────────────────────────────────────────
-function buildGameOverPanel() {
-  const medal = score >= 30 ? '🥇' : score >= 20 ? '🥈' : score >= 10 ? '🥉' : '💀';
-  overlay.innerHTML = `
-    <div class="panel">
-      <h1>GAME<br>OVER</h1>
-      <div class="medal">${medal}</div>
-      <div class="score-row"><span>PUNTOS</span><span class="score-val">${score}</span></div>
-      <div class="score-row"><span>MEJOR</span><span class="score-val">${best}</span></div>
-      <button class="btn" id="start-btn">↺ REINTENTAR</button>
+/* ── BUILD MAIN CARDS ── */
+const grid = document.getElementById('proj-grid');
+PROJECTS.forEach((p, i) => {
+  const card = document.createElement('div');
+  card.className = 'pc rv';
+  card.dataset.category = p.category;
+  card.style.transitionDelay = `${i * 0.07}s`;
+  const catIcons = {negocios:'fa-store',gaming:'fa-gamepad',educacion:'fa-graduation-cap',seguridad:'fa-shield-halved',herramientas:'fa-wrench'};
+  const catIcon = catIcons[p.category] || 'fa-globe';
+  card.innerHTML = `
+    <div class="pc-shot">
+      <div class="skel" id="skel${i}">
+        <div class="skel-inner">
+          <div class="skel-icon" style="color:${p.color}"><i class="fa-solid fa-globe"></i></div>
+          <div class="skel-txt">Cargando vista previa...</div>
+        </div>
+      </div>
+      <img id="img${i}" src="" alt="${p.name}">
+      <div class="pc-overlay">
+        <a href="${p.url}" target="_blank" rel="noopener" class="pc-visit-btn">
+          <i class="fa-solid fa-arrow-up-right-from-square"></i> Ver proyecto
+        </a>
+      </div>
+    </div>
+    <div class="pc-body">
+      <div class="pc-top">
+        <h3 class="pc-name" style="color:${p.color}">${p.name}</h3>
+        <span class="pc-cat-badge"><i class="fa-solid ${catIcon}"></i> ${p.category}</span>
+      </div>
+      <p class="pc-desc">${p.desc}</p>
+      <div class="tags">${p.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>
     </div>`;
-  document.getElementById('start-btn').addEventListener('click', startGame);
-}
-
-function buildStartPanel() {
-  overlay.innerHTML = `
-    <div class="panel">
-      <h1>FLAPPY<br>BIRD</h1>
-      <p class="subtitle">PIXEL EDITION</p>
-      <canvas id="bird-preview" class="bird-preview" width="48" height="48"></canvas>
-      <div id="hint">ESPACIO / CLICK / TAP<br>para volar</div>
-      <br>
-      <button class="btn" id="start-btn">▶ JUGAR</button>
-    </div>`;
-  drawBirdPreview();
-  document.getElementById('start-btn').addEventListener('click', startGame);
-}
-
-function drawBirdPreview() {
-  const pc = document.getElementById('bird-preview');
-  if (!pc) return;
-  const pctx = pc.getContext('2d');
-  pctx.clearRect(0,0,48,48);
-  pctx.save();
-  pctx.translate(24, 24);
-  pctx.scale(0.62, 0.62);
-  drawBirdOnCtx(pctx, 0, 0, 0, 0);
-  pctx.restore();
-}
-
-function drawBirdOnCtx(c, bx, by, rot, ws) {
-  c.save();
-  c.translate(bx, by);
-  c.rotate(rot);
-  const body = [[0,1,1,1,0],[1,1,1,1,1],[1,1,1,1,1],[1,1,1,1,1],[0,1,1,1,0]];
-  const bw = 7;
-  c.fillStyle = '#f5c842';
-  body.forEach((row, r) => row.forEach((v, col) => { if(v) c.fillRect(-17+col*bw,-12+r*bw,bw,bw); }));
-  c.fillStyle = '#fff9e6'; c.fillRect(-10,-4,10,10);
-  c.fillStyle = '#e0a820'; c.fillRect(-14,-10,18,8);
-  c.fillStyle = '#fff';    c.fillRect(4,-12,12,10);
-  c.fillStyle = '#111';    c.fillRect(10,-10,5,6);
-  c.fillStyle = '#fff';    c.fillRect(12,-10,2,2);
-  c.fillStyle = '#f08000'; c.fillRect(14,-5,10,6);
-  c.fillStyle = '#c86000'; c.fillRect(14,-1,10,3);
-  c.restore();
-}
-
-// ─── MAIN LOOP ──────────────────────────────────────────────────────
-function loop() {
-  raf = requestAnimationFrame(loop);
-
-  // BG
-  drawBackground();
-
-  // Clouds
-  clouds.forEach(cl => {
-    if (state === 'playing') cl.x -= 0.5;
-    if (cl.x < -80) cl.x = W + 80;
-    drawCloud(cl.x, cl.y, cl.s);
-  });
-
-  if (state === 'playing') {
-    // Pipes
-    pipeTimer++;
-    if (pipeTimer >= PIPE_INTERVAL) { spawnPipe(); pipeTimer = 0; }
-
-    for (let i = pipes.length - 1; i >= 0; i--) {
-      pipes[i].x -= PIPE_SPD;
-      if (!pipes[i].scored && pipes[i].x + PIPE_W < BIRD.x) {
-        pipes[i].scored = true;
-        score++;
-        scoreDisplay.textContent = score;
-      }
-      if (pipes[i].x < -80) { pipes.splice(i, 1); continue; }
-      drawPipe(pipes[i].x, pipes[i].topH);
-    }
-
-    // Ground scroll
-    groundX = (groundX + PIPE_SPD) % 64;
-    drawGround(groundX);
-
-    // Bird
-    BIRD.update();
-    drawBird(BIRD.x, BIRD.y, BIRD.rotation, BIRD.flapAnim);
-
-    // Collision
-    if (checkCollision()) {
-      spawnFeathers(BIRD.x, BIRD.y);
-      state = 'dead';
-      if (score > best) best = score;
-      scoreDisplay.classList.add('hidden');
-      setTimeout(() => {
-        buildGameOverPanel();
-        overlay.classList.remove('hidden');
-      }, 700);
-    }
-
-  } else if (state === 'dead') {
-    for (let i = pipes.length - 1; i >= 0; i--) drawPipe(pipes[i].x, pipes[i].topH);
-    drawGround(groundX);
-    // Bird falls
-    BIRD.vy += BIRD.gravity;
-    BIRD.y  = Math.min(BIRD.y + BIRD.vy, GROUND_Y - 14);
-    BIRD.rotation = Math.min(Math.PI/2, BIRD.rotation + 0.12);
-    drawBird(BIRD.x, BIRD.y, BIRD.rotation, 0);
-
-  } else {
-    // start / idle
-    drawGround(groundX);
-    BIRD.y = H/2 - 20 + Math.sin(Date.now()/400) * 8;
-    drawBird(BIRD.x, BIRD.y, 0, BIRD.flapAnim);
-  }
-
-  // Particles
-  for (let i = particles.length - 1; i >= 0; i--) {
-    const p = particles[i];
-    p.x += p.vx; p.y += p.vy; p.vy += 0.3; p.life--;
-    ctx.globalAlpha = p.life / 40;
-    ctx.fillStyle = p.col;
-    ctx.fillRect(p.x, p.y, p.size, p.size);
-    ctx.globalAlpha = 1;
-    if (p.life <= 0) particles.splice(i, 1);
-  }
-}
-
-// ─── CONTROLS ───────────────────────────────────────────────────────
-function flap() {
-  if (state === 'playing') BIRD.flap();
-}
-
-document.addEventListener('keydown', e => {
-  if (e.code === 'Space' || e.code === 'ArrowUp') { e.preventDefault(); flap(); }
+  grid.appendChild(card);
+  fetchScreenshot(p.url, i);
 });
 
-canvas.addEventListener('click', flap);
-canvas.addEventListener('touchstart', e => { e.preventDefault(); flap(); }, { passive: false });
+/* ── BUILD ADULT CARDS ── */
+const adultGrid = document.getElementById('adult-grid');
+ADULT_PROJECTS.forEach((p, i) => {
+  const id = 'a' + i;
+  const card = document.createElement('div');
+  card.className = 'pc adult rv';
+  card.innerHTML = `
+    <div class="pc-shot">
+      <div class="skel" id="skel${id}">
+        <div class="skel-inner">
+          <div class="skel-icon" style="color:${p.color}"><i class="fa-solid fa-globe"></i></div>
+          <div class="skel-txt">Cargando...</div>
+        </div>
+      </div>
+      <img id="img${id}" src="" alt="${p.name}">
+      <div class="age-gate" id="ag${id}">
+        <div class="ag-badge">+18</div>
+        <div class="ag-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+        <div class="ag-title">Contenido para adultos</div>
+        <div class="ag-text">Este proyecto contiene contenido para mayores de 18 años.</div>
+        <button class="ag-btn" onclick="revealCard('${id}')">Tengo +18 años — Ver proyecto</button>
+      </div>
+    </div>
+    <div class="pc-body">
+      <div class="pc-top">
+        <h3 class="pc-name" style="color:${p.color}">${p.name}</h3>
+        <a href="${p.url}" target="_blank" rel="noopener" class="pc-ext"><i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+      </div>
+      <p class="pc-desc">${p.desc}</p>
+      <div class="tags">${p.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>
+    </div>`;
+  adultGrid.appendChild(card);
+  fetchScreenshot(p.url, id);
+});
 
-// ─── START GAME ─────────────────────────────────────────────────────
-function startGame() {
-  score = 0;
-  pipes = [];
-  pipeTimer = 0;
-  groundX = 0;
-  particles = [];
-  BIRD.reset();
-  state = 'playing';
-  overlay.classList.add('hidden');
-  scoreDisplay.classList.remove('hidden');
-  scoreDisplay.textContent = '0';
+/* ── SCREENSHOT FETCH ── */
+async function fetchScreenshot(url, id) {
+  try {
+    const res = await fetch(`https://api.microlink.io/?url=${encodeURIComponent(url)}&screenshot=true&meta=false`);
+    const data = await res.json();
+    const ssUrl = data?.data?.screenshot?.url;
+    if(ssUrl) {
+      const img = document.getElementById('img' + id);
+      img.onload = () => {
+        img.style.opacity = '1';
+        const sk = document.getElementById('skel' + id);
+        if(sk) sk.style.display = 'none';
+      };
+      img.onerror = () => showFallback(id);
+      img.src = ssUrl;
+    } else showFallback(id);
+  } catch(e) { showFallback(id); }
 }
 
-// ─── INIT ────────────────────────────────────────────────────────────
-buildStartPanel();
-loop();
+function showFallback(id) {
+  const sk = document.getElementById('skel' + id);
+  if(!sk) return;
+  const isAdult = typeof id === 'string' && id.startsWith('a');
+  const idx = isAdult ? parseInt(id.slice(1)) : id;
+  const arr = isAdult ? ADULT_PROJECTS : PROJECTS;
+  if(arr[idx]) sk.querySelector('.skel-txt').textContent = arr[idx].name;
+  sk.style.background = 'none';
+  sk.style.animation = 'none';
+}
+
+function revealCard(id) {
+  const ag = document.getElementById('ag' + id);
+  if(!ag) return;
+  ag.style.transition = 'opacity .4s';
+  ag.style.opacity = '0';
+  setTimeout(() => ag.remove(), 420);
+}
+
+/* ── FILTER BUTTONS ── */
+document.querySelectorAll('.pf-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.pf-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const f = btn.dataset.filter;
+    document.querySelectorAll('#proj-grid .pc').forEach(card => {
+      card.style.display = (f === 'all' || card.dataset.category === f) ? '' : 'none';
+    });
+  });
+});
+
+/* ── ADULT MODAL ── */
+function openAdultModal() {
+  document.getElementById('adult-modal').classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+function closeAdultModal() {
+  document.getElementById('adult-modal').classList.remove('show');
+  document.body.style.overflow = '';
+}
+function confirmAdult() {
+  closeAdultModal();
+  const sec = document.getElementById('adult-section');
+  sec.style.display = 'block';
+  sec.style.opacity = '0';
+  sec.style.transition = 'opacity .6s ease';
+  requestAnimationFrame(() => requestAnimationFrame(() => { sec.style.opacity = '1'; }));
+  setTimeout(() => sec.scrollIntoView({ behavior:'smooth', block:'start' }), 100);
+  document.querySelectorAll('#adult-grid .rv').forEach(el => { if(window._io) window._io.observe(el); else revealEl(el); });
+}
+function hideAdultSection() {
+  const sec = document.getElementById('adult-section');
+  sec.style.transition = 'opacity .5s ease';
+  sec.style.opacity = '0';
+  setTimeout(() => { sec.style.display = 'none'; sec.style.opacity = ''; }, 500);
+}
+
+/* ── HERO CANVAS ── */
+const cv = document.getElementById('hero-canvas');
+const cx = cv.getContext('2d');
+let pts = [];
+function resizeCv() {
+  cv.width = window.innerWidth;
+  cv.height = window.innerHeight;
+  cv.style.width = window.innerWidth + 'px';
+  cv.style.height = window.innerHeight + 'px';
+}
+resizeCv();
+window.addEventListener('resize', () => { resizeCv(); makePts(); });
+function makePts() {
+  pts = [];
+  const n = Math.floor(cv.width * cv.height / 14000);
+  for(let i = 0; i < n; i++) pts.push({ x:Math.random()*cv.width, y:Math.random()*cv.height, r:Math.random()*1.4+.3, vx:(Math.random()-.5)*.28, vy:(Math.random()-.5)*.28, a:Math.random()*.45+.08 });
+}
+makePts();
+function drawCv() {
+  cx.clearRect(0, 0, cv.width, cv.height);
+  cx.lineWidth = .6;
+  for(let x = 0; x < cv.width; x += 70) { cx.beginPath(); cx.moveTo(x,0); cx.lineTo(x,cv.height); cx.strokeStyle='rgba(0,255,136,.025)'; cx.stroke(); }
+  for(let y = 0; y < cv.height; y += 70) { cx.beginPath(); cx.moveTo(0,y); cx.lineTo(cv.width,y); cx.strokeStyle='rgba(0,255,136,.025)'; cx.stroke(); }
+  for(let i = 0; i < pts.length; i++) {
+    for(let j = i+1; j < pts.length; j++) {
+      const d = Math.hypot(pts[i].x-pts[j].x, pts[i].y-pts[j].y);
+      if(d < 110) { cx.beginPath(); cx.moveTo(pts[i].x,pts[i].y); cx.lineTo(pts[j].x,pts[j].y); cx.strokeStyle=`rgba(0,255,136,${.055*(1-d/110)})`; cx.lineWidth=.5; cx.stroke(); }
+    }
+  }
+  pts.forEach(p => {
+    cx.beginPath(); cx.arc(p.x, p.y, p.r, 0, Math.PI*2); cx.fillStyle=`rgba(0,255,136,${p.a})`; cx.fill();
+    p.x += p.vx; p.y += p.vy;
+    if(p.x < 0) p.x = cv.width; if(p.x > cv.width) p.x = 0;
+    if(p.y < 0) p.y = cv.height; if(p.y > cv.height) p.y = 0;
+  });
+}
+let rafId;
+(function loop(){ rafId = requestAnimationFrame(loop); if(!document.hidden) drawCv(); })();
+document.addEventListener('visibilitychange', () => { if(document.hidden && rafId){ cancelAnimationFrame(rafId); } });
+
+/* ── TYPEWRITER ── */
+const words = ['restaurantes','pastelerías','ferreterías','colegios','tiendas','academias','empresas locales','negocios','proyectos digitales'];
+let wi = 0, ci = 0, del = false;
+const twEl = document.getElementById('tw');
+function type() {
+  const w = words[wi];
+  twEl.textContent = del ? w.slice(0, ci-1) : w.slice(0, ci+1);
+  del ? ci-- : ci++;
+  if(!del && ci === w.length){ del = true; setTimeout(type, 2000); return; }
+  if(del && ci === 0){ del = false; wi = (wi+1) % words.length; }
+  setTimeout(type, del ? 75 : 115);
+}
+type();
+
+/* ── SCROLL REVEAL + COUNTERS ── */
+function startCounter(counter) {
+  if(counter.dataset.counted) return;
+  counter.dataset.counted = '1';
+  animCount(counter);
+}
+
+// Safari-safe IntersectionObserver with generous rootMargin and low threshold
+const ioSupported = ('IntersectionObserver' in window);
+
+function revealEl(el) {
+  el.classList.add('in');
+  el.querySelectorAll('[data-target]').forEach(startCounter);
+}
+
+if(ioSupported) {
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => { if(e.isIntersecting) revealEl(e.target); });
+  }, { threshold: 0, rootMargin: '0px 0px -40px 0px' });
+
+  document.querySelectorAll('.rv').forEach(el => io.observe(el));
+
+  // Force-reveal anything already in viewport after a short delay (Safari fix)
+  setTimeout(() => {
+    document.querySelectorAll('.rv:not(.in)').forEach(el => {
+      const rect = el.getBoundingClientRect();
+      if(rect.top < window.innerHeight && rect.bottom > 0) revealEl(el);
+    });
+  }, 200);
+} else {
+  // Fallback: reveal all immediately
+  document.querySelectorAll('.rv').forEach(revealEl);
+}
+
+// Store io reference for adult section
+window._io = ioSupported ? new IntersectionObserver(entries => {
+  entries.forEach(e => { if(e.isIntersecting) revealEl(e.target); });
+}, { threshold: 0, rootMargin: '0px 0px -40px 0px' }) : null;
+
+function animCount(el) {
+  const target = +el.dataset.target;
+  const suffix = el.dataset.suffix || '';
+  const dur = 1600, start = Date.now();
+  (function tick(){
+    const p = Math.min((Date.now()-start)/dur, 1);
+    const e = 1-Math.pow(1-p, 3);
+    el.textContent = Math.round(e*target) + suffix;
+    if(p < 1) requestAnimationFrame(tick);
+  })();
+}
+
+/* ── NAV SCROLL ── */
+window.addEventListener('scroll', () => {
+  document.getElementById('nav').classList.toggle('scrolled', scrollY > 60);
+  // Fallback reveal on scroll for Safari
+  document.querySelectorAll('.rv:not(.in)').forEach(el => {
+    const rect = el.getBoundingClientRect();
+    if(rect.top < window.innerHeight - 40 && rect.bottom > 0) revealEl(el);
+  });
+});
+function toggleMenu() { document.getElementById('nav-links').classList.toggle('open'); }
+
+/* ── FLOAT BUTTON HIDE ON SECTION ── */
+const floatBtn = document.getElementById('float-whyweb');
+const whySection = document.getElementById('por-que-web');
+if(floatBtn && whySection) {
+  const floatObs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      floatBtn.style.opacity = e.isIntersecting ? '0' : '1';
+      floatBtn.style.pointerEvents = e.isIntersecting ? 'none' : 'auto';
+    });
+  }, {threshold: 0.1});
+  floatObs.observe(whySection);
+}
+
+/* ── FAQ TOGGLE ── */
+function toggleFaq(el) {
+  const item = el.parentElement;
+  const wasOpen = item.classList.contains('open');
+  document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+  if(!wasOpen) item.classList.add('open');
+}
+
+/* ── FORCE REVEAL ON FULL LOAD (Safari fix) ── */
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    document.querySelectorAll('.rv:not(.in)').forEach(el => {
+      const rect = el.getBoundingClientRect();
+      if(rect.top < window.innerHeight + 100) revealEl(el);
+    });
+  }, 100);
+});
 </script>
 </body>
 </html>
