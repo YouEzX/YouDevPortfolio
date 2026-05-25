@@ -157,6 +157,16 @@ body{background:#05050f;color:#e4e4f0;font-family:'Outfit',system-ui,sans-serif;
 .stat-n{font-family:'Syne',sans-serif;font-size:3.8rem;font-weight:800;line-height:1;color:#00ff88;text-shadow:0 0 25px rgba(0,255,136,.4);margin-bottom:.5rem}
 .stat-l{color:#8888aa;font-size:.82rem;text-transform:uppercase;letter-spacing:.08em}
 
+/* ── TEAM ROLES GRID ── */
+.team-roles{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.4rem;margin:2.5rem 0}
+.team-role-card{padding:2rem;background:rgba(11,11,28,.85);border:1px solid rgba(255,255,255,.06);border-radius:16px;transition:all .35s;display:flex;flex-direction:column;gap:1rem}
+.team-role-card:hover{transform:translateY(-5px);box-shadow:0 24px 48px rgba(0,0,0,.35)}
+.trc-icon{width:48px;height:48px;border-radius:12px;border:1px solid;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0}
+.team-role-card h3{font-family:'Syne',sans-serif;font-size:1.05rem;font-weight:800}
+.team-role-card p{color:#8888aa;font-size:.87rem;line-height:1.7;flex:1}
+.trc-tags{display:flex;flex-wrap:wrap;gap:.35rem;margin-top:.3rem}
+.trc-tags span{padding:.18rem .6rem;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:100px;font-size:.72rem;color:#44445a}
+
 /* ── TEAM STORY ── */
 .team-story{position:relative;max-width:960px;margin:0 auto}
 .team-story-lead{font-family:'Syne',sans-serif;font-size:clamp(1.7rem,3.5vw,2.6rem);font-weight:800;line-height:1.15;margin-bottom:2rem}
@@ -342,6 +352,35 @@ footer{padding:2.8rem 3rem;background:#08081a;border-top:1px solid rgba(255,255,
 @keyframes floatBtn{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
 #float-whyweb:hover{animation:none}
 
+/* ── PAQUETES ── */
+.pkg-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:1.5rem;align-items:start}
+.pkg-card{padding:2.4rem;background:rgba(11,11,28,.85);border:1px solid rgba(255,255,255,.06);border-radius:20px;transition:all .35s;position:relative;overflow:hidden}
+.pkg-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--pkg-color,#00ff88);opacity:.6;transition:opacity .3s}
+.pkg-card:hover{transform:translateY(-6px);box-shadow:0 28px 56px rgba(0,0,0,.35)}
+.pkg-card:hover::before{opacity:1}
+.pkg-card.featured{border-color:rgba(0,255,136,.2);background:rgba(0,255,136,.04)}
+.pkg-featured-badge{position:absolute;top:1.2rem;right:1.2rem;padding:.22rem .75rem;background:#00ff88;color:#05050f;border-radius:100px;font-size:.7rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase}
+.pkg-icon{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;margin-bottom:1.4rem;border:1px solid rgba(255,255,255,.08)}
+.pkg-name{font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:800;margin-bottom:.3rem}
+.pkg-desc{color:#8888aa;font-size:.85rem;line-height:1.65;margin-bottom:1.6rem}
+.pkg-price{margin-bottom:1.8rem}
+.pkg-price-label{font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#8888aa;margin-bottom:.3rem}
+.pkg-price-val{font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:800;line-height:1}
+.pkg-price-note{font-size:.75rem;color:#8888aa;margin-top:.3rem}
+.pkg-list{list-style:none;display:flex;flex-direction:column;gap:.85rem;margin-bottom:2rem}
+.pkg-list li{display:flex;align-items:flex-start;gap:.7rem;font-size:.88rem;color:#8888aa;line-height:1.5}
+.pkg-list li i{margin-top:.18rem;flex-shrink:0;font-size:.8rem}
+.pkg-list li.has{color:#c8c8e0}
+.pkg-list li.has i{color:var(--pkg-color,#00ff88)}
+.pkg-list li.no i{color:#33334a}
+.pkg-cta{display:block;padding:.85rem;text-align:center;border-radius:10px;font-family:'Syne',sans-serif;font-size:.9rem;font-weight:700;text-decoration:none;transition:all .25s;border:1px solid rgba(255,255,255,.1);color:#8888aa;display:flex;align-items:center;justify-content:center;gap:.5rem}
+.pkg-cta:hover{color:#e4e4f0;border-color:rgba(255,255,255,.2);background:rgba(255,255,255,.04)}
+.pkg-card.featured .pkg-cta{background:#00ff88;border-color:#00ff88;color:#05050f}
+.pkg-card.featured .pkg-cta:hover{background:#00e07a;box-shadow:0 8px 24px rgba(0,255,136,.3)}
+.pkg-note{text-align:center;margin-top:2.5rem;color:#8888aa;font-size:.85rem}
+.pkg-note a{color:#00ff88;text-decoration:none}
+.pkg-note a:hover{text-decoration:underline}
+
 /* ── NOISE ── */
 body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;pointer-events:none;z-index:999;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='f'%3E%3CfeTurbulence baseFrequency='.7' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23f)'/%3E%3C/svg%3E");opacity:.018}
 
@@ -386,7 +425,7 @@ body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;pointer-eve
     <li><a href="#equipo">Equipo</a></li>
     <li><a href="#historia">Historia</a></li>
     <li><a href="#por-que-web">¿Por qué?</a></li>
-    <li><a href="#testimonios">Clientes</a></li>
+    <li><a href="#paquetes">Paquetes</a></li>
     <li><a href="#proceso">Proceso</a></li>
   </ul>
   <a href="#contacto" class="nav-cta">Contrátanos</a>
@@ -531,20 +570,20 @@ body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;pointer-eve
         <div class="stat-l">Proyectos completados</div>
       </div>
       <div class="stat rv" style="transition-delay:.14s">
-        <div class="stat-n" data-target="2" data-suffix="">0</div>
-        <div class="stat-l">Desarrolladores</div>
-      </div>
-      <div class="stat rv" style="transition-delay:.22s">
         <div class="stat-n" data-target="100" data-suffix="%">0</div>
         <div class="stat-l">Código hecho a mano</div>
       </div>
-      <div class="stat rv" style="transition-delay:.30s">
-        <div class="stat-n" data-target="12" data-suffix="+">0</div>
+      <div class="stat rv" style="transition-delay:.22s">
+        <div class="stat-n" data-target="14" data-suffix="+">0</div>
         <div class="stat-l">Tecnologías dominadas</div>
       </div>
-      <div class="stat rv" style="transition-delay:.38s">
+      <div class="stat rv" style="transition-delay:.30s">
         <div class="stat-n" data-target="24" data-suffix="/7">0</div>
         <div class="stat-l">Soporte post-lanzamiento</div>
+      </div>
+      <div class="stat rv" style="transition-delay:.38s">
+        <div class="stat-n" data-target="3" data-suffix=" días">0</div>
+        <div class="stat-l">Tiempo de respuesta promedio</div>
       </div>
     </div>
   </div>
@@ -558,29 +597,52 @@ body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;pointer-eve
       <h2 class="sec-title">El equipo <span class="acc-g">detrás</span></h2>
     </div>
     <div class="team-story rv">
-      <p class="team-story-lead">Dos amigos que se conocieron a los <span class="acc-g">12 años en la escuela</span> y que un día decidieron que los negocios de su país merecían algo mejor que sitios genéricos y plantillas sin alma.</p>
+      <p class="team-story-lead">Un equipo que nació de una amistad de infancia y creció con una sola obsesión: construir webs que de verdad <span class="acc-g">hagan crecer negocios.</span></p>
       <div class="team-story-body">
-        <p class="team-story-p">Lo que empezó en un salón de clases de Santo Domingo — bromas entre compañeros, proyectos escolares, la misma obsesión por la tecnología — terminó convirtiéndose en algo mucho más grande. Yeicer y Jhohancer no se juntaron por conveniencia ni por negocio: llevan más de una década construyendo confianza, y eso se nota en cada proyecto que firman.</p>
-        <p class="team-story-p">Mientras otros veían un hobby, ellos veían una oportunidad. Yeicer perfeccionando cada pixel, cada animación, cada detalle visual que hace que un usuario se quede. Jhohancer construyendo los sistemas que hacen que todo funcione de verdad: bases de datos, lógica de negocio, APIs, seguridad. <strong>Una amistad de años convertida en la dupla técnica más sólida que puedes encontrar.</strong></p>
-        <p class="team-story-p">Cuando unieron fuerzas oficialmente, el resultado habló solo. Diseño que enamora + backend que no falla = webs que realmente convierten visitantes en clientes. Así nació YouDev: no como una empresa de tecnología, sino como una misión compartida desde la infancia.</p>
+        <p class="team-story-p">Nos conocimos a los 12 años en las aulas de Santo Domingo. Lo que empezó como una pasión compartida por la tecnología entre compañeros de escuela se convirtió, años después, en algo mucho más serio. Hoy somos el equipo detrás de YouDev — dos fundadores que llevan más de una década construyendo confianza, y eso se nota en cada proyecto que entregamos.</p>
+        <p class="team-story-p">No somos una agencia enorme con cien empleados. Somos un equipo pequeño con capacidades grandes, donde cada proyecto recibe atención directa de quienes lo construyen. Sin intermediarios, sin malentendidos, sin excusas. <strong>Tu negocio habla con los mismos que escriben el código.</strong></p>
       </div>
-      <div class="team-duo">
-        <div class="team-pill">
-          <div class="team-pill-av g">Y</div>
-          <div class="team-pill-info">
-            <div class="team-pill-name">Yeicer</div>
-            <div class="team-pill-role"><span>Frontend & UI/UX</span> — El que hace que todo se vea increíble. HTML, CSS, React, diseño y la magia que hace que los usuarios no puedan dejar de scrollear.</div>
-          </div>
+
+      <div class="team-roles rv" style="transition-delay:.08s">
+        <div class="team-role-card">
+          <div class="trc-icon" style="color:#00ff88;background:rgba(0,255,136,.08);border-color:rgba(0,255,136,.18)"><i class="fa-solid fa-pen-ruler"></i></div>
+          <h3>Diseño UI/UX</h3>
+          <p>Creamos interfaces que enamoran desde el primer scroll. Cada pantalla, cada botón y cada color se diseña con intención: guiar al visitante hacia convertirse en tu cliente.</p>
+          <div class="trc-tags"><span>Figma</span><span>Wireframes</span><span>Prototipos</span><span>Branding</span></div>
         </div>
-        <div class="team-pill">
-          <div class="team-pill-av c">J</div>
-          <div class="team-pill-info">
-            <div class="team-pill-name">Jhohancer</div>
-            <div class="team-pill-role"><span>Full-Stack & Backend</span> — El que construye el motor. Node.js, SQL, APIs, seguridad, y todo lo que hace que una web sea rápida, segura y confiable.</div>
-          </div>
+        <div class="team-role-card">
+          <div class="trc-icon" style="color:#00d4ff;background:rgba(0,212,255,.08);border-color:rgba(0,212,255,.18)"><i class="fa-solid fa-code"></i></div>
+          <h3>Desarrollo Frontend</h3>
+          <p>Transformamos los diseños en webs reales: rápidas, animadas y perfectas en cualquier dispositivo. Código limpio que carga en segundos y retiene a los usuarios.</p>
+          <div class="trc-tags"><span>HTML/CSS</span><span>JavaScript</span><span>React</span><span>Responsive</span></div>
+        </div>
+        <div class="team-role-card">
+          <div class="trc-icon" style="color:#9b59ff;background:rgba(155,89,255,.08);border-color:rgba(155,89,255,.18)"><i class="fa-solid fa-server"></i></div>
+          <h3>Backend & Sistemas</h3>
+          <p>Construimos el motor invisible que hace que todo funcione: bases de datos, paneles de administración, pagos en línea, formularios y lógica de negocio a medida.</p>
+          <div class="trc-tags"><span>Node.js</span><span>SQL</span><span>APIs REST</span><span>Seguridad</span></div>
+        </div>
+        <div class="team-role-card">
+          <div class="trc-icon" style="color:#ff9500;background:rgba(255,149,0,.08);border-color:rgba(255,149,0,.18)"><i class="fa-solid fa-magnifying-glass-chart"></i></div>
+          <h3>SEO & Rendimiento</h3>
+          <p>Una web bonita que nadie encuentra no sirve. Optimizamos tu sitio para que Google te posicione, cargue rápido y sea encontrado por tus clientes potenciales.</p>
+          <div class="trc-tags"><span>SEO On-page</span><span>Core Web Vitals</span><span>Google Analytics</span></div>
+        </div>
+        <div class="team-role-card">
+          <div class="trc-icon" style="color:#ff2055;background:rgba(255,32,85,.08);border-color:rgba(255,32,85,.18)"><i class="fa-solid fa-mobile-screen"></i></div>
+          <h3>Mobile First</h3>
+          <p>El 70% de tus clientes llegará desde el teléfono. Diseñamos y desarrollamos pensando en móvil primero, garantizando que tu web luzca perfecta en cualquier pantalla.</p>
+          <div class="trc-tags"><span>iOS</span><span>Android</span><span>Responsive</span><span>Touch UX</span></div>
+        </div>
+        <div class="team-role-card">
+          <div class="trc-icon" style="color:#00ff88;background:rgba(0,255,136,.08);border-color:rgba(0,255,136,.18)"><i class="fa-solid fa-headset"></i></div>
+          <h3>Soporte & Mantenimiento</h3>
+          <p>No desaparecemos al lanzar tu proyecto. Estamos disponibles para ajustes, actualizaciones y cualquier cambio que necesite tu negocio después del lanzamiento.</p>
+          <div class="trc-tags"><span>Post-lanzamiento</span><span>Actualizaciones</span><span>Soporte 1-1</span></div>
         </div>
       </div>
-      <div class="team-values rv" style="transition-delay:.1s">
+
+      <div class="team-values rv" style="transition-delay:.15s">
         <div class="team-val">
           <div class="team-val-ico"><i class="fa-solid fa-code"></i></div>
           <h4>Código hecho a mano</h4>
@@ -590,11 +652,6 @@ body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;pointer-eve
           <div class="team-val-ico"><i class="fa-solid fa-rocket"></i></div>
           <h4>Entrega rápida</h4>
           <p>Sabemos que el tiempo es dinero. Tu web lista en el tiempo prometido, siempre.</p>
-        </div>
-        <div class="team-val">
-          <div class="team-val-ico"><i class="fa-solid fa-headset"></i></div>
-          <h4>Soporte real</h4>
-          <p>No desaparecemos al lanzar. Estamos contigo después del lanzamiento.</p>
         </div>
         <div class="team-val">
           <div class="team-val-ico"><i class="fa-solid fa-heart"></i></div>
@@ -627,7 +684,7 @@ body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;pointer-eve
           <div class="ht-body">
             <div class="ht-year">Los inicios</div>
             <div class="ht-ttl">Dos freelancers con una visión</div>
-            <div class="ht-txt">Yeicer y Jhohancer comenzaron por separado tomando proyectos freelance en Santo Domingo. Cada uno con su especialidad — frontend y backend — pero la misma pasión por el buen código. Aprendiendo, fallando, mejorando. Solos primero, pero con la certeza de que había algo más grande por construir.</div>
+            <div class="ht-txt">Todo comenzó con proyectos freelance en Santo Domingo. Frontend y backend, diseño y lógica, cada uno con su especialidad pero la misma pasión por el buen código. Aprendiendo, fallando, mejorando. Solos al principio, pero con la certeza de que había algo más grande por construir juntos.</div>
           </div>
         </div>
         <div class="ht-item">
@@ -732,52 +789,6 @@ body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;pointer-eve
       <p>Hoy, cuando alguien necesita algo — comida, un servicio, un producto — lo primero que hace es sacar el teléfono y buscar en Google. Si no apareces ahí, sencillamente no existes para esa persona. Y esa persona va a encontrar a alguien que sí aparece. Quizás tu competencia directa.</p>
       <p>Una web profesional no es un lujo. <strong>Es la diferencia entre un negocio que crece y uno que sobrevive.</strong> Es tu vendedor más confiable, el que nunca descansa, nunca se enferma y atiende a cientos de personas al mismo tiempo. Y en YouDev, lo construimos hecho a medida para tu negocio, con diseño que impacta y código que funciona.</p>
       <span class="highlight" style="font-size:1.2rem;color:#e4e4f0">¿Cuánto te está costando no tener una web? <span class="acc-g">Más de lo que crees.</span></span>
-    </div>
-  </div>
-</section>
-
-<!-- TESTIMONIOS -->
-<section id="testimonios" class="sec sec-dark">
-  <div class="wrap">
-    <div class="sec-head center rv">
-      <div class="sec-lbl">Lo que dicen nuestros clientes</div>
-      <h2 class="sec-title">Resultados que <span class="acc-g">hablan</span></h2>
-      <p class="sec-desc">Cada proyecto es una historia de un negocio que dio el salto digital. Estas son algunas de ellas.</p>
-    </div>
-    <div class="test-grid">
-      <div class="test-card rv" style="transition-delay:.06s">
-        <div class="test-stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
-        <p class="test-text">Antes dependía solo del boca a boca. Desde que YouDev me hizo la web, recibo mensajes de clientes que nunca hubiesen sabido de mi pastelería. El diseño quedó exactamente como lo soñé y mejor.</p>
-        <div class="test-author">
-          <div class="test-av" style="background:linear-gradient(135deg,#ff9500,#ff2055)">M</div>
-          <div class="test-author-info">
-            <div class="test-author-name">María González</div>
-            <div class="test-author-biz">DulzonaRD — Pastelería Artesanal</div>
-          </div>
-        </div>
-      </div>
-      <div class="test-card rv" style="transition-delay:.12s">
-        <div class="test-stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
-        <p class="test-text">Lo que más me sorprendió fue la velocidad. En menos de dos semanas tenía mi plataforma lista y funcionando. El equipo responde rápido y explica todo con paciencia. No se arrepienta de contratarlos.</p>
-        <div class="test-author">
-          <div class="test-av" style="background:linear-gradient(135deg,#00d4ff,#9b59ff)">R</div>
-          <div class="test-author-info">
-            <div class="test-author-name">Rafael Méndez</div>
-            <div class="test-author-biz">Emprendedor digital, Santo Domingo</div>
-          </div>
-        </div>
-      </div>
-      <div class="test-card rv" style="transition-delay:.18s">
-        <div class="test-stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
-        <p class="test-text">Tenía miedo de que fuera complicado o muy caro. YouDev me explicó todo desde cero, el precio fue justo y el resultado superó mis expectativas. Mi negocio ahora parece de otra liga en internet.</p>
-        <div class="test-author">
-          <div class="test-av" style="background:linear-gradient(135deg,#00ff88,#00d4ff)">C</div>
-          <div class="test-author-info">
-            <div class="test-author-name">Carmen Reyes</div>
-            <div class="test-author-biz">Boutique de ropa, Santiago</div>
-          </div>
-        </div>
-      </div>
     </div>
   </div>
 </section>
@@ -899,6 +910,113 @@ body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;pointer-eve
   </div>
 </section>
 
+<!-- PAQUETES -->
+<section id="paquetes" class="sec">
+  <div class="wrap">
+    <div class="sec-head center rv">
+      <div class="sec-lbl">Lo que ofrecemos</div>
+      <h2 class="sec-title">Planes para cada <span class="acc-g">negocio</span></h2>
+      <p class="sec-desc">Desde tu primera web hasta plataformas completas. Elige el punto de partida — siempre podemos escalar.</p>
+    </div>
+    <div class="pkg-grid">
+
+      <!-- ESENCIAL -->
+      <div class="pkg-card rv" style="--pkg-color:#00d4ff;transition-delay:.06s">
+        <div class="pkg-icon" style="color:#00d4ff;background:rgba(0,212,255,.08);border-color:rgba(0,212,255,.15)"><i class="fa-solid fa-seedling"></i></div>
+        <div class="pkg-name">Esencial</div>
+        <div class="pkg-desc">La web que tu negocio necesita para existir en internet y generar confianza desde el primer segundo.</div>
+        <div class="pkg-price">
+          <div class="pkg-price-label">Desde</div>
+          <div class="pkg-price-val" style="color:#00d4ff">Conversamos</div>
+          <div class="pkg-price-note">Presupuesto adaptado a tu negocio</div>
+        </div>
+        <ul class="pkg-list">
+          <li class="has"><i class="fa-solid fa-check"></i>Diseño personalizado (hasta 5 secciones)</li>
+          <li class="has"><i class="fa-solid fa-check"></i>100% responsive (móvil + tablet + desktop)</li>
+          <li class="has"><i class="fa-solid fa-check"></i>Formulario de contacto funcional</li>
+          <li class="has"><i class="fa-solid fa-check"></i>Botón de WhatsApp integrado</li>
+          <li class="has"><i class="fa-solid fa-check"></i>SEO básico y meta tags</li>
+          <li class="has"><i class="fa-solid fa-check"></i>Publicación en línea incluida</li>
+          <li class="no"><i class="fa-solid fa-xmark"></i>Panel de administración</li>
+          <li class="no"><i class="fa-solid fa-xmark"></i>E-commerce o pagos en línea</li>
+        </ul>
+        <a href="https://wa.me/18298166996?text=Hola%20YouDev%2C%20me%20interesa%20el%20plan%20*Esencial*%20para%20mi%20negocio.%20Me%20gustar%C3%ADa%20recibir%20una%20cotizaci%C3%B3n." target="_blank" class="pkg-cta">Solicitar cotización <i class="fa-brands fa-whatsapp"></i></a>
+      <div class="pkg-card featured rv" style="--pkg-color:#00ff88;transition-delay:.12s">
+        <div class="pkg-featured-badge">Más popular</div>
+        <div class="pkg-icon" style="color:#00ff88;background:rgba(0,255,136,.1);border-color:rgba(0,255,136,.2)"><i class="fa-solid fa-store"></i></div>
+        <div class="pkg-name">Negocio</div>
+        <div class="pkg-desc">Para negocios que quieren destacar, atraer clientes y gestionar su presencia digital de forma profesional.</div>
+        <div class="pkg-price">
+          <div class="pkg-price-label">Desde</div>
+          <div class="pkg-price-val" style="color:#00ff88">Conversamos</div>
+          <div class="pkg-price-note">Presupuesto adaptado a tu negocio</div>
+        </div>
+        <ul class="pkg-list">
+          <li class="has"><i class="fa-solid fa-check"></i>Todo lo del plan Esencial</li>
+          <li class="has"><i class="fa-solid fa-check"></i>Diseño avanzado con animaciones</li>
+          <li class="has"><i class="fa-solid fa-check"></i>Panel de administración de contenido</li>
+          <li class="has"><i class="fa-solid fa-check"></i>Galería o catálogo de productos</li>
+          <li class="has"><i class="fa-solid fa-check"></i>Blog o sección de noticias</li>
+          <li class="has"><i class="fa-solid fa-check"></i>Google Analytics integrado</li>
+          <li class="has"><i class="fa-solid fa-check"></i>SEO optimizado y velocidad avanzada</li>
+          <li class="no"><i class="fa-solid fa-xmark"></i>Pagos en línea / e-commerce</li>
+        </ul>
+        <a href="https://wa.me/18298166996?text=Hola%20YouDev%2C%20me%20interesa%20el%20plan%20*Negocio*%20para%20mi%20empresa.%20Me%20gustar%C3%ADa%20recibir%20una%20cotizaci%C3%B3n." target="_blank" class="pkg-cta">Solicitar cotización <i class="fa-brands fa-whatsapp"></i></a>
+      </div>
+
+      <!-- PLATAFORMA -->
+      <div class="pkg-card rv" style="--pkg-color:#9b59ff;transition-delay:.18s">
+        <div class="pkg-icon" style="color:#9b59ff;background:rgba(155,89,255,.08);border-color:rgba(155,89,255,.15)"><i class="fa-solid fa-rocket"></i></div>
+        <div class="pkg-name">Plataforma</div>
+        <div class="pkg-desc">Sistemas completos a medida: e-commerce, reservas, membresías, dashboards — lo que tu negocio necesite.</div>
+        <div class="pkg-price">
+          <div class="pkg-price-label">Desde</div>
+          <div class="pkg-price-val" style="color:#9b59ff">Conversamos</div>
+          <div class="pkg-price-note">Presupuesto adaptado a tu proyecto</div>
+        </div>
+        <ul class="pkg-list">
+          <li class="has"><i class="fa-solid fa-check"></i>Todo lo del plan Negocio</li>
+          <li class="has"><i class="fa-solid fa-check"></i>E-commerce o sistema de pagos</li>
+          <li class="has"><i class="fa-solid fa-check"></i>Sistema de usuarios y membresías</li>
+          <li class="has"><i class="fa-solid fa-check"></i>APIs e integraciones a medida</li>
+          <li class="has"><i class="fa-solid fa-check"></i>Dashboard de gestión completo</li>
+          <li class="has"><i class="fa-solid fa-check"></i>Base de datos y backend completo</li>
+          <li class="has"><i class="fa-solid fa-check"></i>Soporte prioritario extendido</li>
+          <li class="has"><i class="fa-solid fa-check"></i>Escalabilidad y mantenimiento</li>
+        </ul>
+        <a href="https://wa.me/18298166996?text=Hola%20YouDev%2C%20me%20interesa%20el%20plan%20*Plataforma*%20para%20mi%20proyecto.%20Me%20gustar%C3%ADa%20recibir%20una%20cotizaci%C3%B3n." target="_blank" class="pkg-cta">Solicitar cotización <i class="fa-brands fa-whatsapp"></i></a>
+      </div>
+
+      <!-- PERSONALIZADO -->
+      <div class="pkg-card rv" style="--pkg-color:#ff9500;transition-delay:.24s">
+        <div class="pkg-icon" style="color:#ff9500;background:rgba(255,149,0,.08);border-color:rgba(255,149,0,.15)"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+        <div class="pkg-name">Personalizado</div>
+        <div class="pkg-desc">¿Tu proyecto no encaja en ninguna caja? Perfecto. Cuéntanos todo lo que tienes en mente y construimos exactamente lo que necesitas, sin límites.</div>
+        <div class="pkg-price">
+          <div class="pkg-price-label">Precio</div>
+          <div class="pkg-price-val" style="color:#ff9500">A tu medida</div>
+          <div class="pkg-price-note">Cotización gratuita sin compromiso</div>
+        </div>
+        <ul class="pkg-list">
+          <li class="has"><i class="fa-solid fa-check"></i>Cualquier tipo de proyecto o idea</li>
+          <li class="has"><i class="fa-solid fa-check"></i>Funcionalidades a medida, sin límites</li>
+          <li class="has"><i class="fa-solid fa-check"></i>Integraciones con cualquier servicio externo</li>
+          <li class="has"><i class="fa-solid fa-check"></i>Diseño único desde cero</li>
+          <li class="has"><i class="fa-solid fa-check"></i>Asesoría completa antes de empezar</li>
+          <li class="has"><i class="fa-solid fa-check"></i>Plan de desarrollo por etapas si es complejo</li>
+          <li class="has"><i class="fa-solid fa-check"></i>Presupuesto detallado y transparente</li>
+          <li class="has"><i class="fa-solid fa-check"></i>Tú decides el alcance y el ritmo</li>
+        </ul>
+        <a href="https://wa.me/18298166996?text=Hola%20YouDev%2C%20tengo%20una%20idea%20de%20proyecto%20*personalizado*%20que%20me%20gustar%C3%ADa%20contarles.%20%C2%BFPodemos%20hablar%3F" target="_blank" class="pkg-cta" style="border-color:rgba(255,149,0,.3);color:#ff9500">Cuéntanos tu idea <i class="fa-brands fa-whatsapp"></i></a>
+      </div>
+
+    </div>
+    <p class="pkg-note rv" style="transition-delay:.24s">
+      ¿No sabes cuál es el tuyo? <a href="#contacto">Cuéntanos tu negocio</a> y te orientamos sin compromiso.
+    </p>
+  </div>
+</section>
+
 <!-- CONTACT -->
 <section id="contacto" class="sec">
   <div class="wrap">
@@ -906,10 +1024,10 @@ body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;pointer-eve
       <h2>¿Listo para tener<br>tu <span class="acc-g">web?</span></h2>
       <p>Cuéntanos tu proyecto y te construimos una presencia digital que realmente destaque. Sin vueltas, sin complicaciones.</p>
       <div class="contact-btns">
-        <a href="mailto:youdev@gmail.com" class="btn-g">
+        <a href="mailto:youdevx@gmail.com" class="btn-g">
           <i class="fa-solid fa-envelope"></i> Enviar correo
         </a>
-        <a href="https://wa.me/18091234567" target="_blank" class="btn-out">
+        <a href="https://wa.me/18298166996?text=Hola%20YouDev%2C%20me%20interesa%20hablar%20sobre%20mi%20proyecto%20web." target="_blank" class="btn-out">
           <i class="fa-brands fa-whatsapp"></i> WhatsApp
         </a>
       </div>
@@ -939,7 +1057,7 @@ body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;pointer-eve
       <li><a href="#contacto">Contacto</a></li>
     </ul>
     <div class="foot-right">
-      <p class="foot-devs">Yeicer &amp; Jhohancer</p>
+      <p class="foot-devs">El equipo YouDev</p>
       <button class="foot-18" onclick="openAdultModal()" title="Zona restringida +18">
         <i class="fa-solid fa-lock"></i> zona restringida
       </button>
